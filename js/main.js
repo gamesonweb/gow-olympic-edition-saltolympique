@@ -4,12 +4,15 @@ let engine;
 let canvas;
 let scene;
 let inputStates = {};
+let cube;
 
 // for jump start
 let chargeStartTime = 0;
 let isJumping = false;
 let jumpHeight = 0;
 let chargingBar; // Declare chargingBar variable
+
+let isFlipping = false;
 
 window.onload = startGame;
 
@@ -28,7 +31,7 @@ function startGame() {
   camera.attachControl(canvas, true);
 
   // Create a cube
-  let cube = BABYLON.MeshBuilder.CreateBox("cube", { size: 1 }, scene);
+  cube = BABYLON.MeshBuilder.CreateBox("cube", { size: 1 }, scene);
   cube.position.y = 0.5;
 
   // Create a material for the cube
@@ -133,6 +136,10 @@ function cubeJump(cube, height) {
   scene.beginAnimation(cube, 0, 40, false, 1, () => {
     // Animation finished callback
     isJumping = false; // Reset jumping state
+    if (isFlipping) {
+      scene.stopAnimation(cube); // Stop the flip animation
+      isFlipping = false; // Reset flipping state
+    }
     chargingBar.style.display = "none"; // Hide the charging bar
     chargingBar.dataset.charging = "false"; // Reset data attribute
   });
@@ -147,4 +154,40 @@ function calculateJumpHeight(chargeDuration) {
   let jumpHeight = chargeAmount * 10;
 
   return jumpHeight;
+}
+
+window.addEventListener("keydown", (event) => {
+  if (event.code === "KeyF" && !isFlipping && isJumping) {
+    isFlipping = true;
+    cubeFlip(cube);
+  }
+});
+
+function cubeFlip(cube) {
+  let flipAnimation = new BABYLON.Animation(
+    "flipAnimation",
+    "rotation.x",
+    60,
+    BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+  );
+
+  let keyFrames = [];
+
+  keyFrames.push({
+    frame: 0,
+    value: cube.rotation.y,
+  });
+
+  keyFrames.push({
+    frame: 120,
+    value: cube.rotation.y + 2 * Math.PI,
+  });
+
+  flipAnimation.setKeys(keyFrames);
+
+  // Utilisez beginDirectAnimation au lieu de beginAnimation
+  scene.beginDirectAnimation(cube, [flipAnimation], 0, 120, false, 1, () => {
+    isFlipping = false; // The flip is over, allow another flip
+  });
 }
