@@ -1,5 +1,9 @@
 import { createScene, modifySettings } from "./mainScene.js";
-import { loadGrannyModel, playNextAnimation } from "./granny.js";
+import {
+  loadGrannyModel,
+  playNextAnimation,
+  loadAnimations,
+} from "./granny.js";
 
 let engine;
 let canvas;

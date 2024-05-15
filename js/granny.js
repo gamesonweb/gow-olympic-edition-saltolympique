@@ -8,7 +8,7 @@ export function loadGrannyModel(scene, callback) {
     "",
     "assets/scene.babylon",
     scene,
-    (meshes, particleSystems, skeletons, animationGroups) => {
+    (meshes, particleSystems, skeletons, animationGroupsS) => {
       let grannyMesh = meshes[0];
       grannyMesh.position = new BABYLON.Vector3(0, 0, 5);
       grannyMesh.scaling = new BABYLON.Vector3(0.2, 0.2, 0.2);
