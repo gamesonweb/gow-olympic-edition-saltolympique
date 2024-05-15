@@ -13,7 +13,9 @@ function startGame() {
   engine = new BABYLON.Engine(canvas, true);
   scene = createScene(engine, canvas);
   loadGrannyModel(scene, () => {
+    loadAnimations(scene);
     modifySettings(inputStates, playNextAnimation);
+    console.log("Granny model loaded");
   });
   engine.runRenderLoop(() => {
     scene.render();

@@ -12,31 +12,35 @@ export function loadGrannyModel(scene, callback) {
       let grannyMesh = meshes[0];
       grannyMesh.position = new BABYLON.Vector3(0, 0, 5);
       grannyMesh.scaling = new BABYLON.Vector3(0.2, 0.2, 0.2);
-      grannySkeleton = skeletons[0]; // Store Granny's skeleton
 
-      // Check if animation groups exist and store them
-      jumpAnim = scene.getAnimationGroupByName("jump");
-      landAnim = scene.getAnimationGroupByName("land");
-      flipAnim = scene.getAnimationGroupByName("FLIP");
-
-      if (grannySkeleton.animationRanges.length === 0) {
-        console.warn("No animations found for Granny's skeleton.");
-      }
       callback();
     }
   );
 }
 
-export function playNextAnimation() {
-  //   if (!grannySkeleton) {
-  //     console.error("Granny's skeleton not loaded yet");
-  //     return;
-  //   }
+export function loadAnimations(scene) {
+  // Directly access animation groups by their names
+  jumpAnim = scene.getAnimationGroupByName("Jump");
+  landAnim = scene.getAnimationGroupByName("Landing");
+  flipAnim = scene.getAnimationGroupByName("FLIP");
 
+  // Check if any animation group is missing
+  if (!jumpAnim) {
+    console.warn("Jump animation group not found.");
+  }
+  if (!landAnim) {
+    console.warn("Landing animation group not found.");
+  }
+  if (!flipAnim) {
+    console.warn("FLIP animation group not found.");
+  }
+}
+
+export function playNextAnimation() {
   switch (currentAnimationIndex) {
     case 0:
-      console.log("jumpAnim");
       if (jumpAnim) {
+        console.log("jumpAnim");
         jumpAnim.start(true, 1.0);
       }
     case 1:
