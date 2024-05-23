@@ -20,15 +20,28 @@ function startGame() {
   canvas = document.getElementById("myCanvas");
   engine = new BABYLON.Engine(canvas, true);
   scene = createScene(engine, canvas);
+// Create a follow camera
+let camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
 
-  // Create a fixed camera
-  let camera = new BABYLON.FreeCamera(
-    "camera",
-    new BABYLON.Vector3(0, 0, -10),
-    scene
-  );
-  camera.setTarget(BABYLON.Vector3.Zero());
-  camera.attachControl(canvas, true);
+// The goal distance of camera from target
+camera.radius = 40;
+
+// The goal height of camera above local origin (centre) of target
+camera.heightOffset = 5;
+
+// The goal rotation of camera around local origin (centre) of target in x y plane
+camera.rotationOffset = 0;
+
+// Acceleration of camera in moving from current to goal position
+camera.cameraAcceleration = 0.05;
+
+// The speed at which acceleration is halted 
+camera.maxCameraSpeed = 20;
+
+// This attaches the camera to the canvas
+camera.attachControl(canvas, true);
+
+// Target the cube
 
   // Create a cube
   cube = BABYLON.MeshBuilder.CreateBox("cube", { size: 1 }, scene);
@@ -38,6 +51,7 @@ function startGame() {
   let material = new BABYLON.StandardMaterial("material", scene);
   material.diffuseColor = new BABYLON.Color3(0.5, 0.5, 1);
   cube.material = material;
+  camera.lockedTarget = cube; //version 2.5 onwards
 
   // Create the charging bar
   chargingBar = createChargingBar(); // Initialize chargingBar

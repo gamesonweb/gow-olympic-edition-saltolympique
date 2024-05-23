@@ -10,7 +10,13 @@ export function createScene(engine, canvas) {
     new BABYLON.Vector3(0, 1, 0),
     scene
   );
-  light.intensity = 0.7;
+  // Create another light
+let light2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(1, 10, -1), scene);
+  light2.intensity = 0.5;
+  light.intensity = 1;
+  // Create another light
+let light3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(1, 10, -1), scene);
+light3.intensity = 1;
 
   // Add ground
   let ground = BABYLON.MeshBuilder.CreateGround(
