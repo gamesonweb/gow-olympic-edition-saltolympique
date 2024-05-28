@@ -20,38 +20,33 @@ function startGame() {
   canvas = document.getElementById("myCanvas");
   engine = new BABYLON.Engine(canvas, true);
   scene = createScene(engine, canvas);
-// Create a follow camera
-let camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
+  // Create a follow camera
+  let camera = new BABYLON.FollowCamera(
+    "FollowCam",
+    new BABYLON.Vector3(0, 10, -10),
+    scene
+  );
 
-// The goal distance of camera from target
-camera.radius = 40;
+  // The goal distance of camera from target
+  camera.radius = 40;
 
-// The goal height of camera above local origin (centre) of target
-camera.heightOffset = 5;
+  // The goal height of camera above local origin (centre) of target
+  camera.heightOffset = 5;
 
-// The goal rotation of camera around local origin (centre) of target in x y plane
-camera.rotationOffset = 0;
+  // The goal rotation of camera around local origin (centre) of target in x y plane
+  camera.rotationOffset = 0;
 
-// Acceleration of camera in moving from current to goal position
-camera.cameraAcceleration = 0.05;
+  // Acceleration of camera in moving from current to goal position
+  camera.cameraAcceleration = 0.05;
 
-// The speed at which acceleration is halted 
-camera.maxCameraSpeed = 20;
+  // The speed at which acceleration is halted
+  camera.maxCameraSpeed = 20;
 
-// This attaches the camera to the canvas
-camera.attachControl(canvas, true);
+  // This attaches the camera to the canvas
+  camera.attachControl(canvas, true);
 
-// Target the cube
-
-  // Create a cube
-  cube = BABYLON.MeshBuilder.CreateBox("cube", { size: 1 }, scene);
-  cube.position.y = 0.5;
-
-  // Create a material for the cube
-  let material = new BABYLON.StandardMaterial("material", scene);
-  material.diffuseColor = new BABYLON.Color3(0.5, 0.5, 1);
-  cube.material = material;
-  camera.lockedTarget = cube; //version 2.5 onwards
+  // Target the cube
+  createCharacter();
 
   // Create the charging bar
   chargingBar = createChargingBar(); // Initialize chargingBar
@@ -122,86 +117,9 @@ function updateChargingBar(chargeDuration) {
   chargingBar.style.backgroundColor = `rgb(${red}, ${green}, 0)`;
 }
 
-function cubeJump(cube, height) {
-  let animation = new BABYLON.Animation(
-    "jumpAnimation",
-    "position.y",
-    30,
-    BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-  );
-
-  let keys = [];
-  keys.push({
-    frame: 0,
-    value: cube.position.y,
-  });
-  keys.push({
-    frame: 20,
-    value: cube.position.y + height,
-  });
-  keys.push({
-    frame: 40,
-    value: cube.position.y,
-  });
-
-  animation.setKeys(keys);
-  cube.animations.push(animation);
-  scene.beginAnimation(cube, 0, 40, false, 1, () => {
-    // Animation finished callback
-    isJumping = false; // Reset jumping state
-    if (isFlipping) {
-      scene.stopAnimation(cube); // Stop the flip animation
-      isFlipping = false; // Reset flipping state
-    }
-    chargingBar.style.display = "none"; // Hide the charging bar
-    chargingBar.dataset.charging = "false"; // Reset data attribute
-  });
-}
-
-function calculateJumpHeight(chargeDuration) {
-  // Convert charge duration to a value between 0 and 1
-  let chargeAmount = Math.min(chargeDuration / 100, 1);
-
-  // Calculate jump height based on charge amount
-  // The maximum jump height is 10 units
-  let jumpHeight = chargeAmount * 10;
-
-  return jumpHeight;
-}
-
 window.addEventListener("keydown", (event) => {
   if (event.code === "KeyF" && !isFlipping && isJumping) {
     isFlipping = true;
     cubeFlip(cube);
   }
 });
-
-function cubeFlip(cube) {
-  let flipAnimation = new BABYLON.Animation(
-    "flipAnimation",
-    "rotation.x",
-    60,
-    BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-    BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-  );
-
-  let keyFrames = [];
-
-  keyFrames.push({
-    frame: 0,
-    value: cube.rotation.y,
-  });
-
-  keyFrames.push({
-    frame: 120,
-    value: cube.rotation.y + 2 * Math.PI,
-  });
-
-  flipAnimation.setKeys(keyFrames);
-
-  // Utilisez beginDirectAnimation au lieu de beginAnimation
-  scene.beginDirectAnimation(cube, [flipAnimation], 0, 120, false, 1, () => {
-    isFlipping = false; // The flip is over, allow another flip
-  });
-}
