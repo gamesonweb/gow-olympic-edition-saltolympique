@@ -9,13 +9,15 @@ let inputStates = {};
 let camera;
 
 // for jump start
+let chargeStartTime = 0;
 let chargingBar; // Declare chargingBar variable
-let chargeDuration = 0;
-let chargeAmount = 0;
+let chargeDirection = 1; // Variable to track charging direction (1: charging, -1: discharging)
 
 // Declare the Personnage instance
 let perso;
 let score;
+
+const MAX_CHARGE_DURATION = 1000; // Maximum charge duration in milliseconds
 
 window.onload = startGame;
 
@@ -36,7 +38,8 @@ function startGame() {
   chargingBar = createChargingBar();
 
   score.displayHighScore();
-  score.createDynamicScore();
+  score.displayCurrentScore(); // Affiche le score actuel
+
 
   // Event listeners for keydown and keyup
   window.addEventListener("keydown", handleKeyDown);
@@ -45,13 +48,8 @@ function startGame() {
   engine.runRenderLoop(() => {
     scene.render();
     if (chargingBar && chargingBar.dataset.charging === "true") {
-      // Check if chargingBar is defined
-      chargeDuration += 1 / 1000;
-      if (chargeDuration > 100000000) {
-        chargeDuration = 0;
-      }
-      chargeAmount = chargeDuration;
-      updateChargingBar(chargeAmount);
+      let chargeDuration = Date.now() - chargeStartTime;
+      updateChargingBar(chargeDuration);
     }
   });
 
@@ -66,11 +64,13 @@ function startGame() {
 
 function handleKeyDown(event) {
   if (event.code === "Space" && !perso.isJumping) {
-    chargeDuration = 0;
-    chargingBar.style.display = "block"; // Show the charging bar
-    chargingBar.style.backgroundColor = "red"; // Start with red color
-    chargingBar.style.width = "0"; // Reset width
-    chargingBar.dataset.charging = "true"; // Set data attribute to indicate charging
+    if (chargingBar.dataset.charging !== "true") {
+      chargeStartTime = Date.now();
+      chargingBar.style.display = "block"; // Show the charging bar
+      chargingBar.style.backgroundColor = "red"; // Start with red color
+      chargingBar.style.width = "0"; // Reset width
+      chargingBar.dataset.charging = "true"; // Set data attribute to indicate charging
+    }
   }
   if (event.code === "KeyF" && !perso.isFlipping && perso.isJumping) {
     perso.isFlipping = true;
@@ -79,11 +79,14 @@ function handleKeyDown(event) {
 }
 
 function handleKeyUp(event) {
-  if (event.code === "Space") {
+  if (event.code === "Space" && chargingBar.dataset.charging === "true") {
+    let chargeDuration = Date.now() - chargeStartTime;
     let jumpHeight = perso.calculateJumpHeight(chargeDuration);
     perso.cubeJump(jumpHeight);
     chargingBar.style.display = "none"; // Hide the charging bar
+    chargingBar.dataset.charging = "false"; // Reset data attribute
     perso.isJumping = true;
+    chargeDirection = 1; // Reset charge direction
   }
 }
 
@@ -91,7 +94,7 @@ function createChargingBar() {
   let chargingBar = document.createElement("div");
   chargingBar.id = "chargingBar";
   chargingBar.style.position = "absolute";
-  chargingBar.style.width = "20%";
+  chargingBar.style.width = "0"; // Initialize with 0 width
   chargingBar.style.height = "20px";
   chargingBar.style.background = "green";
   chargingBar.style.top = "10px";
@@ -101,9 +104,15 @@ function createChargingBar() {
   return chargingBar;
 }
 
-function updateChargingBar(chargeAmount) {
+function updateChargingBar(chargeDuration) {
   // Calculate charge amount between 0 and 1
-  console.log(chargeAmount);
+  let chargeAmount = chargeDuration / MAX_CHARGE_DURATION;
+
+  // If we are discharging, invert the charge amount
+  if (chargeDirection === -1) {
+    chargeAmount = 1 - chargeAmount;
+  }
+
   // Calculate width of the charging bar
   let widthPercentage = chargeAmount * 100;
   chargingBar.style.width = `${widthPercentage}%`;
@@ -112,4 +121,33 @@ function updateChargingBar(chargeAmount) {
   let red = Math.round(255 * (1 - chargeAmount));
   let green = Math.round(255 * chargeAmount);
   chargingBar.style.backgroundColor = `rgb(${red}, ${green}, 0)`;
+
+  // If charge duration exceeds max, reset the charge start time and change direction
+  if (chargeDuration >= MAX_CHARGE_DURATION) {
+    chargeStartTime = Date.now();
+    chargeDirection *= -1; // Reverse the charge direction
+  }
+  function showScoreText(text, position) {
+    let scoreText = document.createElement("div");
+    scoreText.className = "scoreText";
+    scoreText.innerHTML = text;
+    scoreText.style.position = "absolute";
+    scoreText.style.color = "yellow";
+    scoreText.style.fontSize = "24px";
+    scoreText.style.fontWeight = "bold";
+    scoreText.style.textShadow = "2px 2px 4px #000000";
+    scoreText.style.left = position.x + "px";
+    scoreText.style.top = position.y + "px";
+    document.body.appendChild(scoreText);
+  
+    // Animate the text
+    setTimeout(() => {
+      scoreText.style.opacity = 0;
+      scoreText.style.top = (position.y - 50) + "px"; // Move up
+      setTimeout(() => {
+        document.body.removeChild(scoreText);
+      }, 1000);
+    }, 1000);
+  }
+  
 }

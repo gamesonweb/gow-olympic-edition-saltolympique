@@ -91,14 +91,33 @@ export class Score {
     document.body.appendChild(highScoreElement);
     return highScoreElement;
   }
-
+  displayCurrentScore() {
+    let currentScoreElement = document.createElement("div");
+    currentScoreElement.id = "currentScore";
+    currentScoreElement.innerHTML = "Current Score: " + this.score;
+    currentScoreElement.style.position = "absolute";
+    currentScoreElement.style.top = "10px";
+    currentScoreElement.style.left = "10px";
+    currentScoreElement.style.color = "white";
+    currentScoreElement.style.fontFamily = "Arial";
+    currentScoreElement.style.fontSize = "24px";
+    currentScoreElement.style.fontWeight = "bold";
+    currentScoreElement.style.textShadow = "2px 2px 4px #000000";
+    document.body.appendChild(currentScoreElement);
+    return currentScoreElement;
+  }
   updateHighScore() {
     let highScoreElement = document.getElementById("highScore");
     highScoreElement.innerHTML = "High Score: " + this.highScore;
   }
-
-  updateScore() {
-    let scoreElement = document.getElementById("score");
-    scoreElement.innerHTML = "Score: " + this.score;
+  updateCurrentScore() {
+    let currentScoreElement = document.getElementById("currentScore");
+    if (currentScoreElement) {
+      currentScoreElement.innerHTML = "Current Score: " + this.score;
+    } else {
+      console.error("Element with ID 'currentScore' not found in the document.");
+    }
   }
+  
+
 }

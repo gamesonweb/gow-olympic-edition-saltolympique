@@ -1,4 +1,30 @@
+// personnage.js
+
 import { Score } from "./score.js";
+
+function showScoreText(text, position) {
+  let scoreText = document.createElement("div");
+  scoreText.className = "scoreText";
+  scoreText.innerHTML = text;
+  scoreText.style.position = "absolute";
+  scoreText.style.color = "yellow";
+  scoreText.style.fontSize = "24px";
+  scoreText.style.fontWeight = "bold";
+  scoreText.style.textShadow = "2px 2px 4px #000000";
+  scoreText.style.left = position.x + "px";
+  scoreText.style.top = position.y + "px";
+  document.body.appendChild(scoreText);
+
+  // Animate the text
+  setTimeout(() => {
+    scoreText.style.opacity = 0;
+    scoreText.style.top = (position.y - 50) + "px"; // Move up
+    setTimeout(() => {
+      document.body.removeChild(scoreText);
+    }, 1000);
+  }, 1000);
+}
+
 export class Personnage {
   constructor(scene, score) {
     this.cube = null;
@@ -62,6 +88,7 @@ export class Personnage {
     // The maximum jump height is 10 units
     return jumpHeight;
   }
+
   cubeLand() {
     // check if the cube is standing
     console.log("Cube landed");
@@ -108,8 +135,24 @@ export class Personnage {
       false,
       1,
       () => {
-        this.score.increaseScore(100); // Increase score by 10 points
+        this.score.increaseScore(100); // Increase score by 100 points
+        this.score.updateCurrentScore(); // Update current score display
+
         this.isFlipping = false; // The flip is over, allow another flip
+
+        // Calculate screen position for the score text
+        let screenPosition = BABYLON.Vector3.Project(
+          this.cube.position,
+          BABYLON.Matrix.Identity(),
+          this.scene.getTransformMatrix(),
+          this.scene.activeCamera.viewport.toGlobal(
+            this.scene.getEngine().getRenderWidth(),
+            this.scene.getEngine().getRenderHeight()
+          )
+        );
+
+        // Show "+100" text at the cube's screen position
+        showScoreText("+400", { x: screenPosition.x, y: screenPosition.y });
       }
     );
   }
