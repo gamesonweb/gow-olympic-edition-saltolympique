@@ -8,8 +8,12 @@ export class Personnage {
 
   createCharacter() {
     // Create a cube
-    this.cube = BABYLON.MeshBuilder.CreateBox("cube", { size: 1 }, this.scene);
-    this.cube.position.y = 0.5;
+    this.cube = BABYLON.MeshBuilder.CreateBox(
+      "cube",
+      { width: 1, height: 2, depth: 0.5 },
+      this.scene
+    );
+    this.cube.position.y = 1;
 
     // Create a material for the cube
     let material = new BABYLON.StandardMaterial("material", this.scene);
@@ -35,11 +39,13 @@ export class Personnage {
     this.cube.animations.push(animation);
     this.scene.beginAnimation(this.cube, 0, 40, false, 1, () => {
       // Animation finished callback
+      this.cubeLand(); // Check if the cube landed
       this.isJumping = false; // Reset jumping state
       if (this.isFlipping) {
         this.scene.stopAnimation(this.cube); // Stop the flip animation
-        this.isFlipping = false; // Reset flipping state
+        this.cubeReset(); // Reset the cube position
       }
+
       chargingBar.style.display = "none"; // Hide the charging bar
       chargingBar.dataset.charging = "false"; // Reset data attribute
     });
@@ -51,6 +57,27 @@ export class Personnage {
     // Calculate jump height based on charge amount
     // The maximum jump height is 10 units
     return chargeAmount * 10;
+  }
+  cubeLand() {
+    // check if the cube is standing
+    console.log("Cube landed");
+    console.log(this.cube.rotation.x);
+    if (this.cube.rotation.x > 2 && this.cube.rotation.x < 3.7) {
+      // JUMP SUCCEEDED
+      console.log("Cube landed successfully");
+      return true;
+    } else {
+      // JUMP FAILED
+      console.log("Cube landed unsuccessfully");
+      return false;
+    }
+  }
+
+  cubeReset() {
+    this.cube.position = new BABYLON.Vector3(0, 1, 0);
+    this.cube.rotation = new BABYLON.Vector3(0, 0, 0);
+    this.isFlipping = false; // Reset flipping state
+    this.isJumping = false; // Reset jumping state
   }
 
   cubeFlip() {
