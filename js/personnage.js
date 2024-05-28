@@ -136,6 +136,8 @@ export class Personnage {
       1,
       () => {
         this.score.increaseScore(100); // Increase score by 100 points
+        this.score.updateCurrentScore(); // Update current score display
+
         this.isFlipping = false; // The flip is over, allow another flip
 
         // Calculate screen position for the score text

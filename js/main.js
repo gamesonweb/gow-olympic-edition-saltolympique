@@ -38,6 +38,8 @@ function startGame() {
   chargingBar = createChargingBar();
 
   score.displayHighScore();
+  score.displayCurrentScore(); // Affiche le score actuel
+
 
   // Event listeners for keydown and keyup
   window.addEventListener("keydown", handleKeyDown);
