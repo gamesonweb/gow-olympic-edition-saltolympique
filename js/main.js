@@ -11,12 +11,12 @@ let camera;
 // for jump start
 let chargeStartTime = 0;
 let chargingBar; // Declare chargingBar variable
+let chargeDirection = 1; // Variable to track charging direction (1: charging, -1: discharging)
 
 // Declare the Personnage instance
 let perso;
 let score;
 
-window.onload = startGame;
 const MAX_CHARGE_DURATION = 1000; // Maximum charge duration in milliseconds
 
 window.onload = startGame;
@@ -62,11 +62,13 @@ function startGame() {
 
 function handleKeyDown(event) {
   if (event.code === "Space" && !perso.isJumping) {
-    chargeStartTime = Date.now();
-    chargingBar.style.display = "block"; // Show the charging bar
-    chargingBar.style.backgroundColor = "red"; // Start with red color
-    chargingBar.style.width = "0"; // Reset width
-    chargingBar.dataset.charging = "true"; // Set data attribute to indicate charging
+    if (chargingBar.dataset.charging !== "true") {
+      chargeStartTime = Date.now();
+      chargingBar.style.display = "block"; // Show the charging bar
+      chargingBar.style.backgroundColor = "red"; // Start with red color
+      chargingBar.style.width = "0"; // Reset width
+      chargingBar.dataset.charging = "true"; // Set data attribute to indicate charging
+    }
   }
   if (event.code === "KeyF" && !perso.isFlipping && perso.isJumping) {
     perso.isFlipping = true;
@@ -82,6 +84,7 @@ function handleKeyUp(event) {
     chargingBar.style.display = "none"; // Hide the charging bar
     chargingBar.dataset.charging = "false"; // Reset data attribute
     perso.isJumping = true;
+    chargeDirection = 1; // Reset charge direction
   }
 }
 
@@ -100,14 +103,14 @@ function createChargingBar() {
 }
 
 function updateChargingBar(chargeDuration) {
-  // If charge duration exceeds max, reset the charge start time
-  if (chargeDuration >= MAX_CHARGE_DURATION) {
-    chargeStartTime = Date.now();
-    chargeDuration = 0; // Reset charge duration
-  }
-
   // Calculate charge amount between 0 and 1
   let chargeAmount = chargeDuration / MAX_CHARGE_DURATION;
+
+  // If we are discharging, invert the charge amount
+  if (chargeDirection === -1) {
+    chargeAmount = 1 - chargeAmount;
+  }
+
   // Calculate width of the charging bar
   let widthPercentage = chargeAmount * 100;
   chargingBar.style.width = `${widthPercentage}%`;
@@ -116,4 +119,10 @@ function updateChargingBar(chargeDuration) {
   let red = Math.round(255 * (1 - chargeAmount));
   let green = Math.round(255 * chargeAmount);
   chargingBar.style.backgroundColor = `rgb(${red}, ${green}, 0)`;
+
+  // If charge duration exceeds max, reset the charge start time and change direction
+  if (chargeDuration >= MAX_CHARGE_DURATION) {
+    chargeStartTime = Date.now();
+    chargeDirection *= -1; // Reverse the charge direction
+  }
 }

@@ -58,12 +58,13 @@ export class Personnage {
   }
 
   calculateJumpHeight(chargeDuration) {
-    // Convert charge duration to a value between 0 and 1
-    let chargeAmount = Math.min(chargeDuration / 1000, 1);
+    // Calculate charge amount between 0 and 1
+    let chargeAmount = (chargeDuration % 2000) / 2000;
     // Calculate jump height based on charge amount
     // The maximum jump height is 10 units
-    return chargeAmount * 10;
-  }
+    console.log("Jump height: ", chargeAmount*20 );
+    return chargeAmount*20 ;
+}
   
   cubeLand() {
     // check if the cube is standing
