@@ -9,8 +9,9 @@ let inputStates = {};
 let camera;
 
 // for jump start
-let chargeStartTime = 0;
 let chargingBar; // Declare chargingBar variable
+let chargeDuration = 0;
+let chargeAmount = 0;
 
 // Declare the Personnage instance
 let perso;
@@ -44,8 +45,12 @@ function startGame() {
     scene.render();
     if (chargingBar && chargingBar.dataset.charging === "true") {
       // Check if chargingBar is defined
-      let chargeDuration = Date.now() - chargeStartTime;
-      updateChargingBar(chargeDuration);
+      chargeDuration += 1 / 1000;
+      if (chargeDuration > 100000000) {
+        chargeDuration = 0;
+      }
+      chargeAmount = chargeDuration;
+      updateChargingBar(chargeAmount);
     }
   });
 
@@ -60,7 +65,7 @@ function startGame() {
 
 function handleKeyDown(event) {
   if (event.code === "Space" && !perso.isJumping) {
-    chargeStartTime = Date.now();
+    chargeDuration = 0;
     chargingBar.style.display = "block"; // Show the charging bar
     chargingBar.style.backgroundColor = "red"; // Start with red color
     chargingBar.style.width = "0"; // Reset width
@@ -74,7 +79,6 @@ function handleKeyDown(event) {
 
 function handleKeyUp(event) {
   if (event.code === "Space") {
-    let chargeDuration = Date.now() - chargeStartTime;
     let jumpHeight = perso.calculateJumpHeight(chargeDuration);
     perso.cubeJump(jumpHeight);
     chargingBar.style.display = "none"; // Hide the charging bar
@@ -96,9 +100,9 @@ function createChargingBar() {
   return chargingBar;
 }
 
-function updateChargingBar(chargeDuration) {
+function updateChargingBar(chargeAmount) {
   // Calculate charge amount between 0 and 1
-  let chargeAmount = Math.min(chargeDuration / 1000, 1);
+  console.log(chargeAmount);
   // Calculate width of the charging bar
   let widthPercentage = chargeAmount * 100;
   chargingBar.style.width = `${widthPercentage}%`;

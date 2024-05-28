@@ -52,15 +52,15 @@ export class Personnage {
       this.score.updateHighScore(); // Update high score
       chargingBar.style.display = "none"; // Hide the charging bar
       chargingBar.dataset.charging = "false"; // Reset data attribute
+      this.score.resetScore(); // Reset the score
     });
   }
 
-  calculateJumpHeight(chargeDuration) {
-    // Convert charge duration to a value between 0 and 1
-    let chargeAmount = Math.min(chargeDuration / 1000, 1);
+  calculateJumpHeight(chargeAmount) {
+    let jumpHeight = chargeAmount / 10;
     // Calculate jump height based on charge amount
     // The maximum jump height is 10 units
-    return chargeAmount * 10;
+    return jumpHeight;
   }
   cubeLand() {
     // check if the cube is standing
