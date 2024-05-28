@@ -36,6 +36,7 @@ function startGame() {
   chargingBar = createChargingBar();
 
   score.displayHighScore();
+  score.createDynamicScore();
 
   // Event listeners for keydown and keyup
   window.addEventListener("keydown", handleKeyDown);
