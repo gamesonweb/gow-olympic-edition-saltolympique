@@ -125,4 +125,27 @@ function updateChargingBar(chargeDuration) {
     chargeStartTime = Date.now();
     chargeDirection *= -1; // Reverse the charge direction
   }
+  function showScoreText(text, position) {
+    let scoreText = document.createElement("div");
+    scoreText.className = "scoreText";
+    scoreText.innerHTML = text;
+    scoreText.style.position = "absolute";
+    scoreText.style.color = "yellow";
+    scoreText.style.fontSize = "24px";
+    scoreText.style.fontWeight = "bold";
+    scoreText.style.textShadow = "2px 2px 4px #000000";
+    scoreText.style.left = position.x + "px";
+    scoreText.style.top = position.y + "px";
+    document.body.appendChild(scoreText);
+  
+    // Animate the text
+    setTimeout(() => {
+      scoreText.style.opacity = 0;
+      scoreText.style.top = (position.y - 50) + "px"; // Move up
+      setTimeout(() => {
+        document.body.removeChild(scoreText);
+      }, 1000);
+    }, 1000);
+  }
+  
 }

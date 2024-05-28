@@ -54,6 +54,7 @@ export function playNextAnimation() {
     default:
       break;
   }
+  
 
   currentAnimationIndex = (currentAnimationIndex + 1) % 3;
 }
