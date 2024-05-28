@@ -17,6 +17,9 @@ let perso;
 let score;
 
 window.onload = startGame;
+const MAX_CHARGE_DURATION = 1000; // Maximum charge duration in milliseconds
+
+window.onload = startGame;
 
 function startGame() {
   canvas = document.getElementById("myCanvas");
@@ -43,7 +46,6 @@ function startGame() {
   engine.runRenderLoop(() => {
     scene.render();
     if (chargingBar && chargingBar.dataset.charging === "true") {
-      // Check if chargingBar is defined
       let chargeDuration = Date.now() - chargeStartTime;
       updateChargingBar(chargeDuration);
     }
@@ -73,11 +75,12 @@ function handleKeyDown(event) {
 }
 
 function handleKeyUp(event) {
-  if (event.code === "Space") {
+  if (event.code === "Space" && chargingBar.dataset.charging === "true") {
     let chargeDuration = Date.now() - chargeStartTime;
     let jumpHeight = perso.calculateJumpHeight(chargeDuration);
     perso.cubeJump(jumpHeight);
     chargingBar.style.display = "none"; // Hide the charging bar
+    chargingBar.dataset.charging = "false"; // Reset data attribute
     perso.isJumping = true;
   }
 }
@@ -86,7 +89,7 @@ function createChargingBar() {
   let chargingBar = document.createElement("div");
   chargingBar.id = "chargingBar";
   chargingBar.style.position = "absolute";
-  chargingBar.style.width = "20%";
+  chargingBar.style.width = "0"; // Initialize with 0 width
   chargingBar.style.height = "20px";
   chargingBar.style.background = "green";
   chargingBar.style.top = "10px";
@@ -97,8 +100,14 @@ function createChargingBar() {
 }
 
 function updateChargingBar(chargeDuration) {
+  // If charge duration exceeds max, reset the charge start time
+  if (chargeDuration >= MAX_CHARGE_DURATION) {
+    chargeStartTime = Date.now();
+    chargeDuration = 0; // Reset charge duration
+  }
+
   // Calculate charge amount between 0 and 1
-  let chargeAmount = Math.min(chargeDuration / 1000, 1);
+  let chargeAmount = chargeDuration / MAX_CHARGE_DURATION;
   // Calculate width of the charging bar
   let widthPercentage = chargeAmount * 100;
   chargingBar.style.width = `${widthPercentage}%`;

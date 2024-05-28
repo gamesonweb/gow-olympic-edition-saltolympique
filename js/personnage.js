@@ -1,4 +1,3 @@
-import { Score } from "./score.js";
 export class Personnage {
   constructor(scene, score) {
     this.cube = null;
@@ -24,6 +23,9 @@ export class Personnage {
   }
 
   cubeJump(height) {
+    if (this.isJumping) return; // Prevent jump if already jumping
+
+    this.isJumping = true; // Set jumping state to true
     let animation = new BABYLON.Animation(
       "jumpAnimation",
       "position.y",
@@ -62,6 +64,7 @@ export class Personnage {
     // The maximum jump height is 10 units
     return chargeAmount * 10;
   }
+  
   cubeLand() {
     // check if the cube is standing
     console.log("Cube landed");
