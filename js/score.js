@@ -6,14 +6,32 @@ export class Score {
 
   increaseScore(points) {
     this.score += points;
+    let highScoreElement = document.getElementById("scoreAnnoncement");
+    highScoreElement.innerHTML = "+" + points;
+    highScoreElement.style.color = "green";
+    highScoreElement.style.fontFamily = "Arial";
+    highScoreElement.style.fontSize = "24px";
+    highScoreElement.style.fontWeight = "bold";
   }
 
   decreaseScore(points) {
     this.score -= points;
+    let highScoreElement = document.getElementById("scoreAnnoncement");
+    highScoreElement.innerHTML = "-" + points;
+    highScoreElement.style.color = "red";
+    highScoreElement.style.fontFamily = "Arial";
+    highScoreElement.style.fontSize = "24px";
+    highScoreElement.style.fontWeight = "bold";
   }
 
   resetScore() {
     this.score = 0;
+    let highScoreElement = document.getElementById("scoreAnnoncement");
+    highScoreElement.innerHTML = "Score Reset";
+    highScoreElement.style.color = "white";
+    highScoreElement.style.fontFamily = "Arial";
+    highScoreElement.style.fontSize = "24px";
+    highScoreElement.style.fontWeight = "bold";
   }
 
   getScore() {
@@ -24,6 +42,37 @@ export class Score {
     if (this.score > this.highScore) {
       this.highScore = this.score;
     }
+  }
+
+  createDynamicScore() {
+    let scoreElement = document.createElement("div");
+    scoreElement.id = "score";
+    scoreElement.innerHTML = "Score: " + this.score;
+    scoreElement.style.position = "absolute";
+    scoreElement.style.top = "200px";
+    scoreElement.style.left = "10px";
+    scoreElement.style.color = "blue";
+    scoreElement.style.fontFamily = "Arial";
+    scoreElement.style.fontSize = "24px";
+    scoreElement.style.fontWeight = "bold";
+    scoreElement.style.textShadow = "2px 2px 4px #000000";
+    document.body.appendChild(scoreElement);
+    return scoreElement;
+  }
+
+  createScoreAnnoncement() {
+    let scoreAnnoncement = document.createElement("div");
+    scoreAnnoncement.id = "scoreAnnoncement";
+    scoreElement.style.position = "absolute";
+    scoreElement.style.top = "100px";
+    scoreElement.style.left = "10px";
+    scoreElement.style.color = "blue";
+    scoreElement.style.fontFamily = "Arial";
+    scoreElement.style.fontSize = "24px";
+    scoreElement.style.fontWeight = "bold";
+    scoreElement.style.textShadow = "2px 2px 4px #000000";
+    document.body.appendChild(scoreElement);
+    return scoreElement;
   }
 
   displayHighScore() {
@@ -70,4 +119,5 @@ export class Score {
     }
   }
   
+
 }
