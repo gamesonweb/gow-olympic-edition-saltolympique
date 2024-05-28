@@ -1,4 +1,4 @@
-export class Personage {
+export class Personnage {
   constructor(scene) {
     this.cube = null;
     this.isJumping = false;
@@ -15,7 +15,6 @@ export class Personage {
     let material = new BABYLON.StandardMaterial("material", this.scene);
     material.diffuseColor = new BABYLON.Color3(0.5, 0.5, 1);
     this.cube.material = material;
-    this.scene.camera.lockedTarget = this.cube; //version 2.5 onwards
   }
 
   cubeJump(height) {
@@ -28,18 +27,9 @@ export class Personage {
     );
 
     let keys = [];
-    keys.push({
-      frame: 0,
-      value: this.cube.position.y,
-    });
-    keys.push({
-      frame: 20,
-      value: this.cube.position.y + height,
-    });
-    keys.push({
-      frame: 40,
-      value: this.cube.position.y,
-    });
+    keys.push({ frame: 0, value: this.cube.position.y });
+    keys.push({ frame: 20, value: this.cube.position.y + height });
+    keys.push({ frame: 40, value: this.cube.position.y });
 
     animation.setKeys(keys);
     this.cube.animations.push(animation);
@@ -57,13 +47,10 @@ export class Personage {
 
   calculateJumpHeight(chargeDuration) {
     // Convert charge duration to a value between 0 and 1
-    let chargeAmount = Math.min(chargeDuration / 100, 1);
-
+    let chargeAmount = Math.min(chargeDuration / 1000, 1);
     // Calculate jump height based on charge amount
     // The maximum jump height is 10 units
-    let jumpHeight = chargeAmount * 10;
-
-    return jumpHeight;
+    return chargeAmount * 10;
   }
 
   cubeFlip() {
@@ -76,20 +63,11 @@ export class Personage {
     );
 
     let keyFrames = [];
-
-    keyFrames.push({
-      frame: 0,
-      value: this.cube.rotation.y,
-    });
-
-    keyFrames.push({
-      frame: 120,
-      value: this.cube.rotation.y + 2 * Math.PI,
-    });
+    keyFrames.push({ frame: 0, value: this.cube.rotation.y });
+    keyFrames.push({ frame: 120, value: this.cube.rotation.y + 2 * Math.PI });
 
     flipAnimation.setKeys(keyFrames);
 
-    // Utilisez beginDirectAnimation au lieu de beginAnimation
     this.scene.beginDirectAnimation(
       this.cube,
       [flipAnimation],

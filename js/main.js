@@ -1,18 +1,18 @@
-import { createScene, modifySettings } from "./mainScene.js";
+import { createScene, modifySettings, createCamera } from "./mainScene.js";
+import { Personnage } from "./Personnage.js";
 
 let engine;
 let canvas;
 let scene;
 let inputStates = {};
-let cube;
+let camera;
 
 // for jump start
 let chargeStartTime = 0;
-let isJumping = false;
-let jumpHeight = 0;
 let chargingBar; // Declare chargingBar variable
 
-let isFlipping = false;
+// Declare the Personnage instance
+let perso;
 
 window.onload = startGame;
 
@@ -20,57 +20,19 @@ function startGame() {
   canvas = document.getElementById("myCanvas");
   engine = new BABYLON.Engine(canvas, true);
   scene = createScene(engine, canvas);
-  // Create a follow camera
-  let camera = new BABYLON.FollowCamera(
-    "FollowCam",
-    new BABYLON.Vector3(0, 10, -10),
-    scene
-  );
 
-  // The goal distance of camera from target
-  camera.radius = 40;
+  // Initialize the character
+  perso = new Personnage(scene);
+  perso.createCharacter();
 
-  // The goal height of camera above local origin (centre) of target
-  camera.heightOffset = 5;
-
-  // The goal rotation of camera around local origin (centre) of target in x y plane
-  camera.rotationOffset = 0;
-
-  // Acceleration of camera in moving from current to goal position
-  camera.cameraAcceleration = 0.05;
-
-  // The speed at which acceleration is halted
-  camera.maxCameraSpeed = 20;
-
-  // This attaches the camera to the canvas
-  camera.attachControl(canvas, true);
-
-  // Target the cube
-  createCharacter();
+  camera = createCamera(scene, canvas, perso.cube);
 
   // Create the charging bar
-  chargingBar = createChargingBar(); // Initialize chargingBar
+  chargingBar = createChargingBar();
 
   // Event listeners for keydown and keyup
-  window.addEventListener("keydown", (event) => {
-    if (event.code === "Space" && !isJumping) {
-      chargeStartTime = Date.now();
-      chargingBar.style.display = "block"; // Show the charging bar
-      chargingBar.style.backgroundColor = "red"; // Start with red color
-      chargingBar.style.width = "0"; // Reset width
-      chargingBar.dataset.charging = "true"; // Set data attribute to indicate charging
-    }
-  });
-
-  window.addEventListener("keyup", (event) => {
-    if (event.code === "Space") {
-      let chargeDuration = Date.now() - chargeStartTime;
-      jumpHeight = calculateJumpHeight(chargeDuration);
-      cubeJump(cube, jumpHeight);
-      chargingBar.style.display = "none"; // Hide the charging bar
-      isJumping = true;
-    }
-  });
+  window.addEventListener("keydown", handleKeyDown);
+  window.addEventListener("keyup", handleKeyUp);
 
   engine.runRenderLoop(() => {
     scene.render();
@@ -90,6 +52,30 @@ function startGame() {
   modifySettings(inputStates);
 }
 
+function handleKeyDown(event) {
+  if (event.code === "Space" && !perso.isJumping) {
+    chargeStartTime = Date.now();
+    chargingBar.style.display = "block"; // Show the charging bar
+    chargingBar.style.backgroundColor = "red"; // Start with red color
+    chargingBar.style.width = "0"; // Reset width
+    chargingBar.dataset.charging = "true"; // Set data attribute to indicate charging
+  }
+  if (event.code === "KeyF" && !perso.isFlipping && perso.isJumping) {
+    perso.isFlipping = true;
+    perso.cubeFlip();
+  }
+}
+
+function handleKeyUp(event) {
+  if (event.code === "Space") {
+    let chargeDuration = Date.now() - chargeStartTime;
+    let jumpHeight = perso.calculateJumpHeight(chargeDuration);
+    perso.cubeJump(jumpHeight);
+    chargingBar.style.display = "none"; // Hide the charging bar
+    perso.isJumping = true;
+  }
+}
+
 function createChargingBar() {
   let chargingBar = document.createElement("div");
   chargingBar.id = "chargingBar";
@@ -103,10 +89,10 @@ function createChargingBar() {
   document.body.appendChild(chargingBar);
   return chargingBar;
 }
+
 function updateChargingBar(chargeDuration) {
   // Calculate charge amount between 0 and 1
   let chargeAmount = Math.min(chargeDuration / 1000, 1);
-
   // Calculate width of the charging bar
   let widthPercentage = chargeAmount * 100;
   chargingBar.style.width = `${widthPercentage}%`;
@@ -116,10 +102,3 @@ function updateChargingBar(chargeDuration) {
   let green = Math.round(255 * chargeAmount);
   chargingBar.style.backgroundColor = `rgb(${red}, ${green}, 0)`;
 }
-
-window.addEventListener("keydown", (event) => {
-  if (event.code === "KeyF" && !isFlipping && isJumping) {
-    isFlipping = true;
-    cubeFlip(cube);
-  }
-});

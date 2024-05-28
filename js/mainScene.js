@@ -11,12 +11,13 @@ export function createScene(engine, canvas) {
     scene
   );
   // Create another light
-let light2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(1, 10, -1), scene);
+  let light2 = new BABYLON.PointLight(
+    "pointLight",
+    new BABYLON.Vector3(1, 10, -1),
+    scene
+  );
   light2.intensity = 0.5;
   light.intensity = 1;
-  // Create another light
-let light3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(1, 10, -1), scene);
-light3.intensity = 1;
 
   // Add ground
   let ground = BABYLON.MeshBuilder.CreateGround(
@@ -25,9 +26,33 @@ light3.intensity = 1;
     scene
   );
 
-  // Add some objects or meshes to the scene
-
   return scene;
+}
+
+export function createCamera(scene, canvas, target) {
+  // Create a follow camera
+  let camera = new BABYLON.FollowCamera(
+    "FollowCam",
+    new BABYLON.Vector3(0, 10, -10),
+    scene
+  );
+
+  // The goal distance of camera from target
+  camera.radius = 40;
+  // The goal height of camera above local origin (centre) of target
+  camera.heightOffset = 5;
+  // The goal rotation of camera around local origin (centre) of target in x y plane
+  camera.rotationOffset = 0;
+  // Acceleration of camera in moving from current to goal position
+  camera.cameraAcceleration = 0.05;
+  // The speed at which acceleration is halted
+  camera.maxCameraSpeed = 20;
+
+  // This attaches the camera to the canvas
+  camera.attachControl(canvas, true);
+
+  camera.lockedTarget = target;
+  return camera;
 }
 
 export function modifySettings(inputStates) {
