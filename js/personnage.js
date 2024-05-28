@@ -1,9 +1,11 @@
+import { Score } from "./score.js";
 export class Personnage {
-  constructor(scene) {
+  constructor(scene, score) {
     this.cube = null;
     this.isJumping = false;
     this.isFlipping = false;
     this.scene = scene;
+    this.score = score;
   }
 
   createCharacter() {
@@ -45,7 +47,9 @@ export class Personnage {
         this.scene.stopAnimation(this.cube); // Stop the flip animation
         this.cubeReset(); // Reset the cube position
       }
-
+      console.log(this.score.getScore()); // Get the score
+      this.score.setHighScore(); // Set high score
+      this.score.updateHighScore(); // Update high score
       chargingBar.style.display = "none"; // Hide the charging bar
       chargingBar.dataset.charging = "false"; // Reset data attribute
     });
@@ -61,14 +65,15 @@ export class Personnage {
   cubeLand() {
     // check if the cube is standing
     console.log("Cube landed");
-    console.log(this.cube.rotation.x);
     if (this.cube.rotation.x > 2 && this.cube.rotation.x < 3.7) {
       // JUMP SUCCEEDED
       console.log("Cube landed successfully");
+      this.score.increaseScore(300);
       return true;
     } else {
       // JUMP FAILED
       console.log("Cube landed unsuccessfully");
+      this.score.resetScore();
       return false;
     }
   }
@@ -103,6 +108,7 @@ export class Personnage {
       false,
       1,
       () => {
+        this.score.increaseScore(100); // Increase score by 10 points
         this.isFlipping = false; // The flip is over, allow another flip
       }
     );

@@ -1,5 +1,6 @@
 import { createScene, modifySettings, createCamera } from "./mainScene.js";
-import { Personnage } from "./Personnage.js";
+import { Personnage } from "./personnage.js";
+import { Score } from "./score.js";
 
 let engine;
 let canvas;
@@ -13,6 +14,7 @@ let chargingBar; // Declare chargingBar variable
 
 // Declare the Personnage instance
 let perso;
+let score;
 
 window.onload = startGame;
 
@@ -21,14 +23,18 @@ function startGame() {
   engine = new BABYLON.Engine(canvas, true);
   scene = createScene(engine, canvas);
 
+  score = new Score();
+
   // Initialize the character
-  perso = new Personnage(scene);
+  perso = new Personnage(scene, score);
   perso.createCharacter();
 
   camera = createCamera(scene, canvas, perso.cube);
 
   // Create the charging bar
   chargingBar = createChargingBar();
+
+  score.displayHighScore();
 
   // Event listeners for keydown and keyup
   window.addEventListener("keydown", handleKeyDown);
