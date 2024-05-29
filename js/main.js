@@ -18,6 +18,9 @@ let score;
 
 const MAX_CHARGE_DURATION = 1000;
 
+let timerDisplay;
+let timerInterval;
+
 window.onload = startGame;
 
 function startGame() {
@@ -36,6 +39,8 @@ function startGame() {
 
   score.ScoreDisplays();
   displayInstructionsHTML();
+
+  startTimer();
 
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -154,3 +159,50 @@ function updateChargingBar(chargeDuration) {
     chargeDirection *= -1;
   }
 }
+
+
+
+function startTimer() {
+  let timerSeconds = 60; // Durée du timer en secondes
+
+  timerDisplay = document.createElement("div");
+  timerDisplay.innerText = formatTime(timerSeconds);
+  timerDisplay.style.position = "absolute";
+  timerDisplay.style.bottom = "10px";
+  timerDisplay.style.left = "10px";
+  timerDisplay.style.color = "white";
+  timerDisplay.style.fontSize = "20px";
+  document.body.appendChild(timerDisplay);
+
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    timerDisplay.innerText = formatTime(timerSeconds);
+
+    if (timerSeconds === 0) {
+      clearInterval(timerInterval);
+      endGame();
+    }
+  }, 1000);
+}
+
+function formatTime(seconds) {
+  let minutes = Math.floor(seconds / 60);
+  let remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+}
+
+function endGame() {
+  // Afficher un message indiquant la fin du jeu et le score final
+  let endMessage = document.createElement("div");
+  endMessage.innerText = `Le temps est écoulé ! Votre score final est de ${score.getHighScore()}.`;
+  endMessage.style.position = "absolute";
+  endMessage.style.top = "25%";
+  endMessage.style.left = "50%";
+  endMessage.style.transform = "translate(-50%, -50%)";
+  endMessage.style.color = "white";
+  endMessage.style.fontSize = "24px";
+  endMessage.style.fontWeight = "bold";
+  endMessage.style.textAlign = "center";
+  document.body.appendChild(endMessage);
+}
+

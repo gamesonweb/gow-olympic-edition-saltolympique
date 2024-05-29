@@ -28,6 +28,9 @@ export class Score {
     }
     this.updateHighScore();
   }
+  getHighScore() {
+    return this.highScore;
+  }
 
   displayHighScore() {
     console.log("High Score: " + this.highScore);
