@@ -18,7 +18,7 @@ function showScoreText(text, position) {
   // Animate the text
   setTimeout(() => {
     scoreText.style.opacity = 0;
-    scoreText.style.top = (position.y - 50) + "px"; // Move up
+    scoreText.style.top = position.y - 50 + "px"; // Move up
     setTimeout(() => {
       document.body.removeChild(scoreText);
     }, 1000);
@@ -92,7 +92,8 @@ export class Personnage {
   cubeLand() {
     // check if the cube is standing
     console.log("Cube landed");
-    if (this.cube.rotation.x > 2 && this.cube.rotation.x < 3.7) {
+    console.log(this.cube.rotation.x);
+    if (this.cube.rotation.x > -2 && this.cube.rotation.x < 3.7) {
       // JUMP SUCCEEDED
       console.log("Cube landed successfully");
       this.score.increaseScore(300);

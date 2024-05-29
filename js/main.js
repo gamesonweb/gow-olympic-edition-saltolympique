@@ -1,6 +1,7 @@
 import { createScene, modifySettings, createCamera } from "./mainScene.js";
 import { Personnage } from "./personnage.js";
 import { Score } from "./score.js";
+import { displayInstructionsHTML } from "./instructions.js";
 
 let engine;
 let canvas;
@@ -37,9 +38,8 @@ function startGame() {
   // Create the charging bar
   chargingBar = createChargingBar();
 
-  score.displayHighScore();
-  score.displayCurrentScore(); // Affiche le score actuel
-
+  score.ScoreDisplays();
+  displayInstructionsHTML();
 
   // Event listeners for keydown and keyup
   window.addEventListener("keydown", handleKeyDown);
@@ -93,13 +93,20 @@ function handleKeyUp(event) {
 function createChargingBar() {
   let chargingBar = document.createElement("div");
   chargingBar.id = "chargingBar";
+  chargingBar.className = "chargingBar";
   chargingBar.style.position = "absolute";
   chargingBar.style.width = "0"; // Initialize with 0 width
   chargingBar.style.height = "20px";
   chargingBar.style.background = "green";
-  chargingBar.style.top = "10px";
+  chargingBar.style.top = "100px";
   chargingBar.style.left = "10px";
   chargingBar.style.display = "none"; // Initially hide the charging bar
+
+  // Add a cute border
+  chargingBar.style.border = "2px solid #fffff"; // Pink border color
+  chargingBar.style.borderRadius = "10px"; // Rounded corners
+  chargingBar.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)"; // Subtle shadow
+
   document.body.appendChild(chargingBar);
   return chargingBar;
 }
@@ -139,15 +146,14 @@ function updateChargingBar(chargeDuration) {
     scoreText.style.left = position.x + "px";
     scoreText.style.top = position.y + "px";
     document.body.appendChild(scoreText);
-  
+
     // Animate the text
     setTimeout(() => {
       scoreText.style.opacity = 0;
-      scoreText.style.top = (position.y - 50) + "px"; // Move up
+      scoreText.style.top = position.y - 50 + "px"; // Move up
       setTimeout(() => {
         document.body.removeChild(scoreText);
       }, 1000);
     }, 1000);
   }
-  
 }
