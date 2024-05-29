@@ -29,6 +29,9 @@ export class Score {
   setFinalScore() {
     this.finalScore = this.scoreStreak;
   }
+  getHighScore() {
+    return this.highScore;
+  }
 
   displayscoreStreak() {
     console.log("Score Streak: " + this.scoreStreak);
