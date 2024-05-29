@@ -10,7 +10,7 @@ body {
   height: 100%;
 }
 
-.highScore {
+.scoreStreak {
   order: 2;
   color: #fde9ff;
   font-weight: 900;

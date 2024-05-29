@@ -49,12 +49,10 @@ export class Personnage {
       if (this.isFlipping) {
         // this.scene.stopAnimation(this.cube); // Stop the flip animation
       }
-      console.log(this.score.getScore()); // Get the score
-      this.score.setHighScore(); // Set high score
       chargingBar.style.display = "none"; // Hide the charging bar
       chargingBar.dataset.charging = "false"; // Reset data attribute
-      this.score.resetScore(); // Reset the score
       this.cubeReset(); // Reset the cube position
+      this.score.endofJump(); // End of jump
     });
   }
 
