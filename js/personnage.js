@@ -7,6 +7,8 @@ export class Personnage {
     this.isFlipping = false;
     this.scene = scene;
     this.score = score;
+    this.rotationX = 0;
+    this.rotationY = 0;
   }
 
   createCharacter() {
@@ -45,14 +47,14 @@ export class Personnage {
       this.cubeLand(); // Check if the cube landed
       this.isJumping = false; // Reset jumping state
       if (this.isFlipping) {
-        this.scene.stopAnimation(this.cube); // Stop the flip animation
-        this.cubeReset(); // Reset the cube position
+        // this.scene.stopAnimation(this.cube); // Stop the flip animation
       }
       console.log(this.score.getScore()); // Get the score
       this.score.setHighScore(); // Set high score
       chargingBar.style.display = "none"; // Hide the charging bar
       chargingBar.dataset.charging = "false"; // Reset data attribute
       this.score.resetScore(); // Reset the score
+      this.cubeReset(); // Reset the cube position
     });
   }
 
@@ -65,10 +67,7 @@ export class Personnage {
 
   cubeLand() {
     // check if the cube is standing
-    console.log("Cube landed");
-    console.log(this.cube.rotation.x);
-    if (this.cube.rotation.x > -2 && this.cube.rotation.x < 3.7) {
-      // JUMP SUCCEEDED
+    if (this.rotationX > -0.8 && this.rotationX < 0.8) {
       console.log("Cube landed successfully");
       this.score.increaseScore(300);
       return true;
@@ -85,6 +84,8 @@ export class Personnage {
     this.cube.rotation = new BABYLON.Vector3(0, 0, 0);
     this.isFlipping = false; // Reset flipping state
     this.isJumping = false; // Reset jumping state
+    this.rotationX = 0;
+    this.rotationY = 0;
   }
 
   cubeFlip() {
@@ -128,22 +129,26 @@ export class Personnage {
       }
     );
   }
+
   handleRotation(inputStates) {
     if (inputStates.left) {
       this.cube.rotate(BABYLON.Axis.Y, -0.05, BABYLON.Space.LOCAL);
-      if (Math.abs(this.cube.rotation.y) >= 2 * Math.PI) {
+      this.rotationY -= 0.05;
+      if (Math.abs(this.rotationY) >= 2 * Math.PI) {
         this.fullTurnY();
       }
     }
     if (inputStates.right) {
       this.cube.rotate(BABYLON.Axis.Y, 0.05, BABYLON.Space.LOCAL);
-      if (Math.abs(this.cube.rotation.y) >= 2 * Math.PI) {
+      this.rotationY += 0.05;
+      if (Math.abs(this.rotationY) >= 2 * Math.PI) {
         this.fullTurnY();
       }
     }
     if (inputStates.flipping) {
+      this.rotationX += 0.1;
       this.cube.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
-      if (Math.abs(this.cube.rotation.x) >= 2 * Math.PI) {
+      if (Math.abs(this.rotationX) >= 2 * Math.PI) {
         this.fullTurnX();
       }
     }
@@ -161,6 +166,8 @@ export class Personnage {
     this.score.increaseScore(100);
     // Update the current score display
     this.score.updateCurrentScore();
+    // Reset the rotation
+    this.rotationY = 0;
   }
 
   fullTurnX() {
@@ -169,5 +176,7 @@ export class Personnage {
     this.score.increaseScore(200);
     // Update the current score display
     this.score.updateCurrentScore();
+    // Reset the rotation
+    this.rotationX = 0;
   }
 }
