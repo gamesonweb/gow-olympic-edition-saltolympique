@@ -15,6 +15,7 @@ let chargeDirection = 1;
 
 let perso;
 let score;
+let timerRunning = false;
 
 const MAX_CHARGE_DURATION = 1000;
 
@@ -40,7 +41,6 @@ function startGame() {
   score.ScoreDisplays();
   displayInstructionsHTML();
 
-  startTimer();
 
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -69,7 +69,9 @@ function handleKeyDown(event) {
       chargingBar.style.backgroundColor = "red";
       chargingBar.style.width = "0";
       chargingBar.dataset.charging = "true";
-    }
+      startTimer();
+      
+    } 
   }
 
   if (event.code === "ArrowLeft") {
@@ -149,6 +151,9 @@ function updateChargingBar(chargeDuration) {
 
 
 function startTimer() {
+  if (timerInterval) {
+    return; // Arrête la fonction si le timer est déjà en cours
+  }
   let timerSeconds = 60; // Durée du timer en secondes
 
   timerDisplay = document.createElement("div");
