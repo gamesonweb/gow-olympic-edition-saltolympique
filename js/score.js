@@ -111,7 +111,7 @@ export class Score {
     // Animate the text
     setTimeout(() => {
       scoreText.style.opacity = 0;
-      scoreText.style.top = position.y - 50 + "px"; // Move up
+      scoreText.style.top = 300 - 50 + "px"; // Move up
       setTimeout(() => {
         document.body.removeChild(scoreText);
       }, 1000);

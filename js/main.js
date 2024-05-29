@@ -46,9 +46,7 @@ function startGame() {
       let chargeDuration = Date.now() - chargeStartTime;
       updateChargingBar(chargeDuration);
     }
-    if (perso.isJumping) {
-      handleRotation();
-    }
+    perso.update(inputStates);
   });
 
   window.addEventListener("resize", () => {
@@ -101,18 +99,6 @@ function handleKeyUp(event) {
   if (event.code === "KeyF") {
     inputStates.flipping = false;
     perso.isFlipping = false;
-  }
-}
-
-function handleRotation() {
-  if (inputStates.left) {
-    perso.cube.rotate(BABYLON.Axis.Y, -0.05, BABYLON.Space.LOCAL);
-  }
-  if (inputStates.right) {
-    perso.cube.rotate(BABYLON.Axis.Y, 0.05, BABYLON.Space.LOCAL);
-  }
-  if (inputStates.flipping) {
-    perso.cube.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
   }
 }
 

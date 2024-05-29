@@ -128,4 +128,46 @@ export class Personnage {
       }
     );
   }
+  handleRotation(inputStates) {
+    if (inputStates.left) {
+      this.cube.rotate(BABYLON.Axis.Y, -0.05, BABYLON.Space.LOCAL);
+      if (Math.abs(this.cube.rotation.y) >= 2 * Math.PI) {
+        this.fullTurnY();
+      }
+    }
+    if (inputStates.right) {
+      this.cube.rotate(BABYLON.Axis.Y, 0.05, BABYLON.Space.LOCAL);
+      if (Math.abs(this.cube.rotation.y) >= 2 * Math.PI) {
+        this.fullTurnY();
+      }
+    }
+    if (inputStates.flipping) {
+      this.cube.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
+      if (Math.abs(this.cube.rotation.x) >= 2 * Math.PI) {
+        this.fullTurnX();
+      }
+    }
+  }
+
+  update(inputStates) {
+    if (this.isJumping) {
+      this.handleRotation(inputStates);
+    }
+  }
+
+  fullTurnY() {
+    console.log("Full turn");
+    // Add 100 to the score
+    this.score.increaseScore(100);
+    // Update the current score display
+    this.score.updateCurrentScore();
+  }
+
+  fullTurnX() {
+    console.log("Full turn");
+    // Add 200 to the score
+    this.score.increaseScore(200);
+    // Update the current score display
+    this.score.updateCurrentScore();
+  }
 }
