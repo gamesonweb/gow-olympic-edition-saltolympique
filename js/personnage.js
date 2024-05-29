@@ -27,6 +27,8 @@ export class Personnage {
   }
 
   cubeJump(height) {
+    let jumpDuration = height * 2; // Augmenter la durée du saut en fonction de la hauteur
+    
     let animation = new BABYLON.Animation(
       "jumpAnimation",
       "position.y",
@@ -34,15 +36,15 @@ export class Personnage {
       BABYLON.Animation.ANIMATIONTYPE_FLOAT,
       BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
     );
-
+  
     let keys = [];
     keys.push({ frame: 0, value: this.cube.position.y });
-    keys.push({ frame: 20, value: this.cube.position.y + height });
-    keys.push({ frame: 40, value: this.cube.position.y });
-
+    keys.push({ frame: jumpDuration *0.5, value: this.cube.position.y + height });
+    keys.push({ frame: jumpDuration, value: this.cube.position.y });
+  
     animation.setKeys(keys);
     this.cube.animations.push(animation);
-    this.scene.beginAnimation(this.cube, 0, 40, false, 1, () => {
+    this.scene.beginAnimation(this.cube, 0, jumpDuration, false, 1, () => {
       // Animation finished callback
       this.cubeLand(); // Check if the cube landed
       this.isJumping = false; // Reset jumping state
@@ -55,6 +57,7 @@ export class Personnage {
       this.score.endofJump(); // End of jump
     });
   }
+  
 
   calculateJumpHeight(chargeAmount) {
     let jumpHeight = chargeAmount / 10;
