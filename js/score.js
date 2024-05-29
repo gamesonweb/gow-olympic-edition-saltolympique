@@ -1,64 +1,65 @@
 export class Score {
   constructor() {
     this.score = 0;
-    this.highScore = 0;
+    this.scoreStreak = 0;
+    this.finalScore = 0;
   }
 
   increaseScore(points) {
     this.score += points;
     this.showScoreText("+" + points);
+    this.updateCurrentScore();
   }
 
   decreaseScore(points) {
     this.score -= points;
     this.showScoreText("-" + point);
+    this.updateCurrentScore();
   }
 
   resetScore() {
     this.score = 0;
+    this.updateCurrentScore();
   }
 
   getScore() {
     return this.score;
   }
 
-  setHighScore() {
-    if (this.score > this.highScore) {
-      this.highScore = this.score;
-    }
-    this.updateHighScore();
+  setFinalScore() {
+    this.finalScore = this.scoreStreak;
   }
 
-  displayHighScore() {
-    console.log("High Score: " + this.highScore);
-    let highScoreElement = document.createElement("div");
-    highScoreElement.id = "highScore";
-    highScoreElement.className = "highScore"; // Add the class name
-    highScoreElement.innerHTML =
-      "<span data-text='High Score: " +
-      this.highScore +
-      "'>High Score: " +
-      this.highScore +
+  displayscoreStreak() {
+    console.log("Score Streak: " + this.scoreStreak);
+    let scoreStreakElement = document.createElement("div");
+    scoreStreakElement.id = "scoreStreak";
+    scoreStreakElement.className = "scoreStreak"; // Add the class name
+    scoreStreakElement.innerHTML =
+      "<span data-text='Score Streak: " +
+      this.scoreStreak +
+      "'>Score Streak: " +
+      this.scoreStreak +
       "</span>";
-    highScoreElement.style.position = "absolute";
-    highScoreElement.style.bottom = "10px";
-    highScoreElement.style.right = "10px";
-    highScoreElement.style.color = "white";
-    highScoreElement.style.fontFamily = "Arial";
-    highScoreElement.style.fontSize = "40px";
-    highScoreElement.style.fontWeight = "bold";
-    highScoreElement.style.textShadow = "2px 2px 4px #000000";
-    document.body.appendChild(highScoreElement);
-    return highScoreElement;
+    scoreStreakElement.style.position = "absolute";
+    scoreStreakElement.style.bottom = "10px";
+    scoreStreakElement.style.right = "10px";
+    scoreStreakElement.style.color = "white";
+    scoreStreakElement.style.fontFamily = "Arial";
+    scoreStreakElement.style.fontSize = "40px";
+    scoreStreakElement.style.fontWeight = "bold";
+    scoreStreakElement.style.textShadow = "2px 2px 4px #000000";
+    document.body.appendChild(scoreStreakElement);
+    return scoreStreakElement;
   }
   displayCurrentScore() {
     let currentScoreElement = document.createElement("div");
     currentScoreElement.id = "currentScore";
     currentScoreElement.className = "currentScore"; // Add the class name
     currentScoreElement.innerHTML =
-      "<span data-text='Current Score: " +
+      "<span data-text='Current Jump Score: " +
       this.score +
-      "'>Current Score: " +
+      "'>Current Jump Score: " +
       this.score +
       "</span>";
     currentScoreElement.style.position = "absolute";
@@ -72,29 +73,39 @@ export class Score {
     document.body.appendChild(currentScoreElement);
     return currentScoreElement;
   }
-  updateHighScore() {
-    let highScoreElement = document.getElementById("highScore");
-    highScoreElement.innerHTML =
-      "<span data-text='High Score: " +
-      this.highScore +
-      "'>High Score: " +
-      this.highScore +
+  updatescoreStreak() {
+    let scoreStreakElement = document.getElementById("scoreStreak");
+    scoreStreakElement.innerHTML =
+      "<span data-text='Score Streak: " +
+      this.scoreStreak +
+      "'>Score Streak: " +
+      this.scoreStreak +
       "</span>";
   }
   updateCurrentScore() {
     let currentScoreElement = document.getElementById("currentScore");
     currentScoreElement.innerHTML =
-      "<span data-text='Current Score: " +
+      "<span data-text='Current Jump Score: " +
       this.score +
-      "'>Current Score: " +
+      "'>Current Jump Score: " +
       this.score +
       "</span>";
   }
 
   ScoreDisplays() {
-    this.displayHighScore();
+    this.displayscoreStreak();
     this.displayCurrentScore();
   }
+
+  endofJump() {
+    //add to the score streak
+    this.scoreStreak += this.score;
+    // reset the current jump score
+    this.score = 0;
+    this.updateCurrentScore();
+    this.updatescoreStreak();
+  }
+
   showScoreText(text) {
     let scoreText = document.createElement("div");
     scoreText.className = "scoreText";
@@ -111,7 +122,7 @@ export class Score {
     // Animate the text
     setTimeout(() => {
       scoreText.style.opacity = 0;
-      scoreText.style.top = position.y - 50 + "px"; // Move up
+      scoreText.style.top = 300 - 50 + "px"; // Move up
       setTimeout(() => {
         document.body.removeChild(scoreText);
       }, 1000);
