@@ -9,16 +9,14 @@ let scene;
 let inputStates = {};
 let camera;
 
-// for jump start
 let chargeStartTime = 0;
-let chargingBar; // Declare chargingBar variable
-let chargeDirection = 1; // Variable to track charging direction (1: charging, -1: discharging)
+let chargingBar;
+let chargeDirection = 1;
 
-// Declare the Personnage instance
 let perso;
 let score;
 
-const MAX_CHARGE_DURATION = 1000; // Maximum charge duration in milliseconds
+const MAX_CHARGE_DURATION = 1000;
 
 window.onload = startGame;
 
@@ -29,19 +27,16 @@ function startGame() {
 
   score = new Score();
 
-  // Initialize the character
   perso = new Personnage(scene, score);
   perso.createCharacter();
 
   camera = createCamera(scene, canvas, perso.cube);
 
-  // Create the charging bar
   chargingBar = createChargingBar();
 
   score.ScoreDisplays();
   displayInstructionsHTML();
 
-  // Event listeners for keydown and keyup
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
 
@@ -51,14 +46,15 @@ function startGame() {
       let chargeDuration = Date.now() - chargeStartTime;
       updateChargingBar(chargeDuration);
     }
+    if (perso.isJumping) {
+      handleRotation();
+    }
   });
 
-  // Resize the engine when the window is resized
   window.addEventListener("resize", () => {
     engine.resize();
   });
 
-  // Modify settings
   modifySettings(inputStates);
 }
 
@@ -66,15 +62,22 @@ function handleKeyDown(event) {
   if (event.code === "Space" && !perso.isJumping) {
     if (chargingBar.dataset.charging !== "true") {
       chargeStartTime = Date.now();
-      chargingBar.style.display = "block"; // Show the charging bar
-      chargingBar.style.backgroundColor = "red"; // Start with red color
-      chargingBar.style.width = "0"; // Reset width
-      chargingBar.dataset.charging = "true"; // Set data attribute to indicate charging
+      chargingBar.style.display = "block";
+      chargingBar.style.backgroundColor = "red";
+      chargingBar.style.width = "0";
+      chargingBar.dataset.charging = "true";
     }
   }
-  if (event.code === "KeyF" && !perso.isFlipping && perso.isJumping) {
+
+  if (event.code === "ArrowLeft") {
+    inputStates.left = true;
+  }
+  if (event.code === "ArrowRight") {
+    inputStates.right = true;
+  }
+  if (event.code === "KeyF" && perso.isJumping && !inputStates.flipping) {
+    inputStates.flipping = true;
     perso.isFlipping = true;
-    perso.cubeFlip();
   }
 }
 
@@ -83,10 +86,33 @@ function handleKeyUp(event) {
     let chargeDuration = Date.now() - chargeStartTime;
     let jumpHeight = perso.calculateJumpHeight(chargeDuration);
     perso.cubeJump(jumpHeight);
-    chargingBar.style.display = "none"; // Hide the charging bar
-    chargingBar.dataset.charging = "false"; // Reset data attribute
+    chargingBar.style.display = "none";
+    chargingBar.dataset.charging = "false";
     perso.isJumping = true;
-    chargeDirection = 1; // Reset charge direction
+    chargeDirection = 1;
+  }
+
+  if (event.code === "ArrowLeft") {
+    inputStates.left = false;
+  }
+  if (event.code === "ArrowRight") {
+    inputStates.right = false;
+  }
+  if (event.code === "KeyF") {
+    inputStates.flipping = false;
+    perso.isFlipping = false;
+  }
+}
+
+function handleRotation() {
+  if (inputStates.left) {
+    perso.cube.rotate(BABYLON.Axis.Y, -0.05, BABYLON.Space.LOCAL);
+  }
+  if (inputStates.right) {
+    perso.cube.rotate(BABYLON.Axis.Y, 0.05, BABYLON.Space.LOCAL);
+  }
+  if (inputStates.flipping) {
+    perso.cube.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
   }
 }
 
@@ -95,65 +121,36 @@ function createChargingBar() {
   chargingBar.id = "chargingBar";
   chargingBar.className = "chargingBar";
   chargingBar.style.position = "absolute";
-  chargingBar.style.width = "0"; // Initialize with 0 width
+  chargingBar.style.width = "0";
   chargingBar.style.height = "20px";
   chargingBar.style.background = "green";
   chargingBar.style.top = "100px";
   chargingBar.style.left = "10px";
-  chargingBar.style.display = "none"; // Initially hide the charging bar
-
-  // Add a cute border
-  chargingBar.style.border = "2px solid #fffff"; // Pink border color
-  chargingBar.style.borderRadius = "10px"; // Rounded corners
-  chargingBar.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)"; // Subtle shadow
+  chargingBar.style.display = "none";
+  chargingBar.style.border = "2px solid #fffff";
+  chargingBar.style.borderRadius = "10px";
+  chargingBar.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
 
   document.body.appendChild(chargingBar);
   return chargingBar;
 }
 
 function updateChargingBar(chargeDuration) {
-  // Calculate charge amount between 0 and 1
   let chargeAmount = chargeDuration / MAX_CHARGE_DURATION;
 
-  // If we are discharging, invert the charge amount
   if (chargeDirection === -1) {
     chargeAmount = 1 - chargeAmount;
   }
 
-  // Calculate width of the charging bar
   let widthPercentage = chargeAmount * 100;
   chargingBar.style.width = `${widthPercentage}%`;
 
-  // Interpolate color from red to green based on charge amount
   let red = Math.round(255 * (1 - chargeAmount));
   let green = Math.round(255 * chargeAmount);
   chargingBar.style.backgroundColor = `rgb(${red}, ${green}, 0)`;
 
-  // If charge duration exceeds max, reset the charge start time and change direction
   if (chargeDuration >= MAX_CHARGE_DURATION) {
     chargeStartTime = Date.now();
-    chargeDirection *= -1; // Reverse the charge direction
-  }
-  function showScoreText(text, position) {
-    let scoreText = document.createElement("div");
-    scoreText.className = "scoreText";
-    scoreText.innerHTML = text;
-    scoreText.style.position = "absolute";
-    scoreText.style.color = "yellow";
-    scoreText.style.fontSize = "24px";
-    scoreText.style.fontWeight = "bold";
-    scoreText.style.textShadow = "2px 2px 4px #000000";
-    scoreText.style.left = position.x + "px";
-    scoreText.style.top = position.y + "px";
-    document.body.appendChild(scoreText);
-
-    // Animate the text
-    setTimeout(() => {
-      scoreText.style.opacity = 0;
-      scoreText.style.top = position.y - 50 + "px"; // Move up
-      setTimeout(() => {
-        document.body.removeChild(scoreText);
-      }, 1000);
-    }, 1000);
+    chargeDirection *= -1;
   }
 }
