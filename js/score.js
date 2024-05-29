@@ -6,32 +6,16 @@ export class Score {
 
   increaseScore(points) {
     this.score += points;
-    let scoreAnnoncementElement = document.getElementById("scoreAnnoncement");
-    scoreAnnoncementElement.innerHTML = "+" + points;
-    scoreAnnoncementElement.style.color = "green";
-    scoreAnnoncementElement.style.fontFamily = "Arial";
-    scoreAnnoncementElement.style.fontSize = "24px";
-    scoreAnnoncementElement.style.fontWeight = "bold";
+    this.showScoreText("+" + points);
   }
 
   decreaseScore(points) {
     this.score -= points;
-    let scoreAnnoncementElement = document.getElementById("scoreAnnoncement");
-    scoreAnnoncementElement.innerHTML = "-" + points;
-    scoreAnnoncementElement.style.color = "red";
-    scoreAnnoncementElement.style.fontFamily = "Arial";
-    scoreAnnoncementElement.style.fontSize = "24px";
-    scoreAnnoncementElement.style.fontWeight = "bold";
+    this.showScoreText("-" + point);
   }
 
   resetScore() {
     this.score = 0;
-    let scoreAnnoncementElement = document.getElementById("scoreAnnoncement");
-    scoreAnnoncementElement.innerHTML = "Score Reset";
-    scoreAnnoncementElement.style.color = "white";
-    scoreAnnoncementElement.style.fontFamily = "Arial";
-    scoreAnnoncementElement.style.fontSize = "24px";
-    scoreAnnoncementElement.style.fontWeight = "bold";
   }
 
   getScore() {
@@ -42,21 +26,7 @@ export class Score {
     if (this.score > this.highScore) {
       this.highScore = this.score;
     }
-  }
-
-  createScoreAnnoncement() {
-    let scoreAnnoncementElement = document.createElement("div");
-    scoreAnnoncementElement.id = "scoreAnnoncement";
-    scoreAnnoncementElement.style.position = "absolute";
-    scoreAnnoncementElement.style.top = "200px";
-    scoreAnnoncementElement.style.left = "10px";
-    scoreAnnoncementElement.style.color = "blue";
-    scoreAnnoncementElement.style.fontFamily = "Arial";
-    scoreAnnoncementElement.style.fontSize = "24px";
-    scoreAnnoncementElement.style.fontWeight = "bold";
-    scoreAnnoncementElement.style.textShadow = "2px 2px 4px #000000";
-    document.body.appendChild(scoreAnnoncementElement);
-    return scoreAnnoncementElement;
+    this.updateHighScore();
   }
 
   displayHighScore() {
@@ -113,18 +83,38 @@ export class Score {
   }
   updateCurrentScore() {
     let currentScoreElement = document.getElementById("currentScore");
-    if (currentScoreElement) {
-      currentScoreElement.innerHTML = "Current Score: " + this.score;
-    } else {
-      console.error(
-        "Element with ID 'currentScore' not found in the document."
-      );
-    }
+    currentScoreElement.innerHTML =
+      "<span data-text='Current Score: " +
+      this.score +
+      "'>Current Score: " +
+      this.score +
+      "</span>";
   }
 
   ScoreDisplays() {
-    this.createScoreAnnoncement();
     this.displayHighScore();
     this.displayCurrentScore();
+  }
+  showScoreText(text) {
+    let scoreText = document.createElement("div");
+    scoreText.className = "scoreText";
+    scoreText.innerHTML = text;
+    scoreText.style.position = "absolute";
+    scoreText.style.color = "yellow";
+    scoreText.style.fontSize = "24px";
+    scoreText.style.fontWeight = "bold";
+    scoreText.style.textShadow = "2px 2px 4px #000000";
+    scoreText.style.left = 310 + "px";
+    scoreText.style.top = 300 + "px";
+    document.body.appendChild(scoreText);
+
+    // Animate the text
+    setTimeout(() => {
+      scoreText.style.opacity = 0;
+      scoreText.style.top = position.y - 50 + "px"; // Move up
+      setTimeout(() => {
+        document.body.removeChild(scoreText);
+      }, 1000);
+    }, 1000);
   }
 }
