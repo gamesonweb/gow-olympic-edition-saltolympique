@@ -70,7 +70,7 @@ export class Personnage {
     // check if the cube is standing
     if (this.rotationX > -0.8 && this.rotationX < 0.8) {
       console.log("Cube landed successfully");
-      this.score.increaseScore(300);
+      this.score.increaseScore(50);
       return true;
     } else {
       // JUMP FAILED
@@ -85,6 +85,7 @@ export class Personnage {
     this.cube.rotation = new BABYLON.Vector3(0, 0, 0);
     this.isFlipping = false; // Reset flipping state
     this.isJumping = false; // Reset jumping state
+    this.twisting = false;
     this.rotationX = 0;
     this.rotationY = 0;
   }
@@ -133,15 +134,15 @@ export class Personnage {
 
   handleRotation(inputStates) {
     if (inputStates.left) {
-      this.cube.rotate(BABYLON.Axis.Y, -0.05, BABYLON.Space.LOCAL);
-      this.rotationY -= 0.05;
+      this.cube.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
+      this.rotationY -= 0.1;
       if (Math.abs(this.rotationY) >= 2 * Math.PI) {
         this.fullTurnY();
       }
     }
     if (inputStates.right) {
-      this.cube.rotate(BABYLON.Axis.Y, 0.05, BABYLON.Space.LOCAL);
-      this.rotationY += 0.05;
+      this.cube.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
+      this.rotationY += 0.1;
       if (Math.abs(this.rotationY) >= 2 * Math.PI) {
         this.fullTurnY();
       }
@@ -153,8 +154,29 @@ export class Personnage {
         this.fullTurnX();
       }
     }
-  }
+    if(inputStates.twistingLeft) {
+      console.log("TwistiJOEFEng");
+      this.rotationX += 0.1;
+      this.rotationY -= 0.1;
+      this.cube.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
+      this.cube.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
+      if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI){
+        this.fullTurnXandY();
+      }
+    }
+    if (inputStates.twistingRigth) {
+      console.log("TwistSQFNNSFing");
+      this.rotationX += 0.1;
+      this.rotationY += 0.1;
+      this.cube.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
+      this.cube.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
+      if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI) {
+        this.fullTurnXandY();
+      }
 
+    }
+  }
+  
   update(inputStates) {
     if (this.isJumping) {
       this.handleRotation(inputStates);
@@ -164,7 +186,7 @@ export class Personnage {
   fullTurnY() {
     console.log("Full turn");
     // Add 100 to the score
-    this.score.increaseScore(100);
+    this.score.increaseScore(150);
     // Update the current score display
     this.score.updateCurrentScore();
     // Reset the rotation
@@ -179,5 +201,16 @@ export class Personnage {
     this.score.updateCurrentScore();
     // Reset the rotation
     this.rotationX = 0;
+  }
+
+  fullTurnXandY() {
+    console.log("TWISTANCE");
+    // Add 300 to the score
+    this.score.increaseScore(500);
+    // Update the current score display
+    this.score.updateCurrentScore();
+    // Reset the rotation
+    this.rotationX = 0;
+    this.rotationY = 0;
   }
 }
