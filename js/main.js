@@ -15,6 +15,7 @@ let chargeDirection = 1;
 
 let perso;
 let score;
+let timerRunning = false;
 
 const MAX_CHARGE_DURATION = 1000;
 
@@ -40,7 +41,6 @@ function startGame() {
   score.ScoreDisplays();
   displayInstructionsHTML();
 
-  startTimer();
 
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -69,7 +69,9 @@ function handleKeyDown(event) {
       chargingBar.style.backgroundColor = "red";
       chargingBar.style.width = "0";
       chargingBar.dataset.charging = "true";
-    }
+      startTimer();
+      
+    } 
   }
 
   if (event.code === "ArrowLeft") {
@@ -81,6 +83,17 @@ function handleKeyDown(event) {
   if (event.code === "KeyF" && perso.isJumping && !inputStates.flipping) {
     inputStates.flipping = true;
     perso.isFlipping = true;
+  }
+  if (inputStates.flipping  && perso.isJumping && !inputStates.twistingRigth && inputStates.right){
+    inputStates.twistingRigth = true;
+    perso.isTwisting = true;
+    
+    console.log("twistppipipipiing");
+  }
+  if (inputStates.flipping  && perso.isJumping && !inputStates.twistingLeft && inputStates.left){
+    inputStates.twistingLeft = true;
+    perso.isTwisting = true;
+    console.log("ca twits twisting");
   }
 }
 
@@ -97,13 +110,20 @@ function handleKeyUp(event) {
 
   if (event.code === "ArrowLeft") {
     inputStates.left = false;
+    inputStates.twistingLeft = false;
   }
   if (event.code === "ArrowRight") {
     inputStates.right = false;
+    inputStates.twistingRigth = false;
+
   }
   if (event.code === "KeyF") {
     inputStates.flipping = false;
     perso.isFlipping = false;
+    inputStates.twistingLeft= false;
+    inputStates.twistingRigth = false;
+    perso.isTwisting = false;
+
   }
 }
 
@@ -149,6 +169,9 @@ function updateChargingBar(chargeDuration) {
 
 
 function startTimer() {
+    if (timerInterval) {
+    return; // Arrête la fonction si le timer est déjà en cours
+  }
   let timerSeconds = 60; // Durée du timer en secondes
 
   timerDisplay = document.createElement("div");

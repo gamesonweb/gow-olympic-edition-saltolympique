@@ -30,7 +30,7 @@ export class Score {
     this.finalScore = this.scoreStreak;
   }
   getHighScore() {
-    return this.highScore;
+    return this.scoreStreak;
   }
 
   displayscoreStreak() {

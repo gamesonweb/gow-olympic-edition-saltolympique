@@ -27,6 +27,8 @@ export class Personnage {
   }
 
   cubeJump(height) {
+    let jumpDuration = height * 2; // Augmenter la durée du saut en fonction de la hauteur
+    
     let animation = new BABYLON.Animation(
       "jumpAnimation",
       "position.y",
@@ -34,15 +36,15 @@ export class Personnage {
       BABYLON.Animation.ANIMATIONTYPE_FLOAT,
       BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
     );
-
+  
     let keys = [];
     keys.push({ frame: 0, value: this.cube.position.y });
-    keys.push({ frame: 20, value: this.cube.position.y + height });
-    keys.push({ frame: 40, value: this.cube.position.y });
-
+    keys.push({ frame: jumpDuration *0.5, value: this.cube.position.y + height });
+    keys.push({ frame: jumpDuration, value: this.cube.position.y });
+  
     animation.setKeys(keys);
     this.cube.animations.push(animation);
-    this.scene.beginAnimation(this.cube, 0, 40, false, 1, () => {
+    this.scene.beginAnimation(this.cube, 0, jumpDuration, false, 1, () => {
       // Animation finished callback
       this.cubeLand(); // Check if the cube landed
       this.isJumping = false; // Reset jumping state
@@ -55,6 +57,7 @@ export class Personnage {
       this.score.endofJump(); // End of jump
     });
   }
+  
 
   calculateJumpHeight(chargeAmount) {
     let jumpHeight = chargeAmount / 10;
@@ -67,7 +70,7 @@ export class Personnage {
     // check if the cube is standing
     if (this.rotationX > -0.8 && this.rotationX < 0.8) {
       console.log("Cube landed successfully");
-      this.score.increaseScore(300);
+      this.score.increaseScore(50);
       return true;
     } else {
       // JUMP FAILED
@@ -82,6 +85,7 @@ export class Personnage {
     this.cube.rotation = new BABYLON.Vector3(0, 0, 0);
     this.isFlipping = false; // Reset flipping state
     this.isJumping = false; // Reset jumping state
+    this.twisting = false;
     this.rotationX = 0;
     this.rotationY = 0;
   }
@@ -130,15 +134,15 @@ export class Personnage {
 
   handleRotation(inputStates) {
     if (inputStates.left) {
-      this.cube.rotate(BABYLON.Axis.Y, -0.05, BABYLON.Space.LOCAL);
-      this.rotationY -= 0.05;
+      this.cube.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
+      this.rotationY -= 0.1;
       if (Math.abs(this.rotationY) >= 2 * Math.PI) {
         this.fullTurnY();
       }
     }
     if (inputStates.right) {
-      this.cube.rotate(BABYLON.Axis.Y, 0.05, BABYLON.Space.LOCAL);
-      this.rotationY += 0.05;
+      this.cube.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
+      this.rotationY += 0.1;
       if (Math.abs(this.rotationY) >= 2 * Math.PI) {
         this.fullTurnY();
       }
@@ -150,8 +154,29 @@ export class Personnage {
         this.fullTurnX();
       }
     }
-  }
+    if(inputStates.twistingLeft) {
+      console.log("TwistiJOEFEng");
+      this.rotationX += 0.1;
+      this.rotationY -= 0.1;
+      this.cube.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
+      this.cube.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
+      if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI){
+        this.fullTurnXandY();
+      }
+    }
+    if (inputStates.twistingRigth) {
+      console.log("TwistSQFNNSFing");
+      this.rotationX += 0.1;
+      this.rotationY += 0.1;
+      this.cube.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
+      this.cube.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
+      if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI) {
+        this.fullTurnXandY();
+      }
 
+    }
+  }
+  
   update(inputStates) {
     if (this.isJumping) {
       this.handleRotation(inputStates);
@@ -161,7 +186,7 @@ export class Personnage {
   fullTurnY() {
     console.log("Full turn");
     // Add 100 to the score
-    this.score.increaseScore(100);
+    this.score.increaseScore(150);
     // Update the current score display
     this.score.updateCurrentScore();
     // Reset the rotation
@@ -176,5 +201,16 @@ export class Personnage {
     this.score.updateCurrentScore();
     // Reset the rotation
     this.rotationX = 0;
+  }
+
+  fullTurnXandY() {
+    console.log("TWISTANCE");
+    // Add 300 to the score
+    this.score.increaseScore(500);
+    // Update the current score display
+    this.score.updateCurrentScore();
+    // Reset the rotation
+    this.rotationX = 0;
+    this.rotationY = 0;
   }
 }
