@@ -21,10 +21,11 @@ const MAX_CHARGE_DURATION = 1000;
 
 let timerDisplay;
 let timerInterval;
+let timerSeconds = 10;
 
 window.onload = startGame;
 
-function startGame() {
+function startGame(showInstructions = true) {
   canvas = document.getElementById("myCanvas");
   engine = new BABYLON.Engine(canvas, true);
   scene = createScene(engine, canvas);
@@ -38,9 +39,12 @@ function startGame() {
 
   chargingBar = createChargingBar();
 
-  score.ScoreDisplays();
-  displayInstructionsHTML();
+  
 
+  if (showInstructions) {
+    displayInstructionsHTML();
+    score.ScoreDisplays();
+  }
 
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
@@ -60,6 +64,7 @@ function startGame() {
 
   modifySettings(inputStates);
 }
+
 
 function handleKeyDown(event) {
   if (event.code === "Space" && !perso.isJumping) {
@@ -169,10 +174,10 @@ function updateChargingBar(chargeDuration) {
 
 
 function startTimer() {
-    if (timerInterval) {
+  if (timerInterval) {
+    console.log("Timer already running",timerInterval);
     return; // Arrête la fonction si le timer est déjà en cours
   }
-  let timerSeconds = 60; // Durée du timer en secondes
 
   timerDisplay = document.createElement("div");
   timerDisplay.innerText = formatTime(timerSeconds);
@@ -189,6 +194,7 @@ function startTimer() {
 
     if (timerSeconds === 0) {
       clearInterval(timerInterval);
+      console.log("Timer ended",timerInterval);
       endGame();
     }
   }, 1000);
@@ -213,5 +219,72 @@ function endGame() {
   endMessage.style.fontWeight = "bold";
   endMessage.style.textAlign = "center";
   document.body.appendChild(endMessage);
+  
+  let inputPseudo = document.createElement("input");
+  inputPseudo.type = "text";
+  inputPseudo.placeholder = "Entrez votre pseudo";
+  inputPseudo.style.position = "absolute";
+  inputPseudo.style.top = "40%";
+  inputPseudo.style.left = "50%";
+  inputPseudo.style.transform = "translate(-50%, -50%)";
+  document.body.appendChild(inputPseudo);
+
+  let restartButton = document.createElement("button");
+  restartButton.innerText = "Rejouer";
+  restartButton.style.position = "absolute";
+  restartButton.style.top = "50%";
+  restartButton.style.left = "50%";
+  restartButton.style.transform = "translate(-50%, -50%)";
+  restartButton.addEventListener("click", () => {
+      let pseudo = inputPseudo.value;
+      if (pseudo) {
+          console.log(`Pseudo: ${pseudo}, Score: ${score.getHighScore()}`);
+          restartGame();
+          restartButton.remove(); // Supprime le bouton reset après avoir réinitialisé le jeu
+          inputPseudo.remove(); 
+          endMessage.remove();
+          timerDisplay.remove();
+
+      } else {
+          alert("Veuillez entrer un pseudo.");
+      }
+  });
+  document.body.appendChild(restartButton);
 }
+function restartGame() {
+  // Clear dynamic game elements
+  const elementsToRemove = document.querySelectorAll("#chargingBar, #timerDisplay, #endMessage, #instructions, #resetButton");
+  elementsToRemove.forEach(element => element.remove());
+
+  // Reset game variables
+  inputStates = {};
+  chargeStartTime = 0;
+  chargeDirection = 1;
+  timerRunning = false;
+
+  // Reset score and timer
+  timerSeconds = 60;  // Reset timer to 1 minute
+  if (perso && perso.cube) {
+    perso.cube.animations.forEach(animation => {
+      perso.scene.stopAnimation(perso.cube, animation);
+    });
+    perso.cube.animations = [];
+  }
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null; // Reset the timer interval variable
+  }
+  // Restart the game without displaying instructions
+  startGame(false);  // Pass false to indicate not to show instructions
+
+  if (perso) {
+    perso.cubeReset();
+    inputStates = {}; // Reset input states
+  }
+  console.log("Timer restarted",timerInterval);
+
+}
+
+
+
 
