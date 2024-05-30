@@ -16,20 +16,13 @@ export function loadolympianModel(scene, callback) {
           let olympianMesh = meshes[0];
 
           // Set the skeleton and animations
-          olympianSkeleton = skeletons[0];
-          jumpAnim = animationGroups.find((anim) => anim.name === "jump");
-          poseAnim = animationGroups.find((anim) => anim.name === "pose");
-          flipAnim = animationGroups.find((anim) => anim.name === "flip");
+          let flipAnim = animationGroups.find((anim) => anim.name === "flip");
+          let poseAnim = animationGroups.find((anim) => anim.name === "Pose");
+          let jumpAnim = animationGroups.find((anim) => anim.name === "jump");
 
-          // Log position and visibility
-          console.log(`olympian position: ${olympianMesh.position}`);
-          console.log(`olympian scaling: ${olympianMesh.scaling}`);
-          console.log(`olympian is visible: ${olympianMesh.isVisible}`);
 
           console.log("olympian model loaded successfully.");
-
-          // Call the callback with the mesh
-          callback(olympianMesh);
+          callback(olympianMesh, { flipAnim }); // Pass flipAnim in the callback
         } else {
           console.error("olympian model not loaded. No meshes found.");
         }

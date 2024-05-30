@@ -1,17 +1,21 @@
 let grannySkeleton; // Variable to store Granny's skeleton
 let jumpAnim, landAnim, flipAnim; // Variables to store animation groups
+let currentAnimationIndex = 0; // Initialize currentAnimationIndex
 
-export function loadGrannyModel(scene, characterFile, callback) {
+let path = "/Users/fernandespatrick/Desktop/Master Miage /gow-olympic-edition-saltolympique/assets/models";
+console.log(path);
+
+export function loadGrannyModel(scene, callback) {
   BABYLON.SceneLoader.ImportMesh(
       "",
       "assets/models/",
-      characterFile,
+      "granny.glb",
       scene,
       (meshes, particleSystems, skeletons, animationGroups) => {
         if (meshes.length > 0) {
           let grannyMesh = meshes[0];
-          //grannyMesh.position = new BABYLON.Vector3(0, 0, 0);
-          //grannyMesh.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
+          grannyMesh.position = new BABYLON.Vector3(0, 0, 0);
+          grannyMesh.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
 
           // Set the skeleton and animations
           grannySkeleton = skeletons[0];
@@ -19,15 +23,17 @@ export function loadGrannyModel(scene, characterFile, callback) {
           landAnim = animationGroups.find(anim => anim.name === "Landing");
           flipAnim = animationGroups.find(anim => anim.name === "FLIP");
 
-          if (!jumpAnim || !landAnim || !flipAnim) {
-            console.error("Error: One or more animations not found.");
-            return;
-          }
+          // Log position and visibility
+          console.log(`Granny position: ${grannyMesh.position}`);
+          console.log(`Granny scaling: ${grannyMesh.scaling}`);
+          console.log(`Granny is visible: ${grannyMesh.isVisible}`);
 
           console.log("Granny model loaded successfully.");
-          callback(grannyMesh, { jumpAnim, landAnim, flipAnim });
+
+          // Call the callback with the mesh
+          callback(grannyMesh);
         } else {
-          console.error("Error: Granny model not loaded. No meshes found.");
+          console.error("Granny model not loaded. No meshes found.");
         }
       },
       null,
@@ -37,14 +43,33 @@ export function loadGrannyModel(scene, characterFile, callback) {
   );
 }
 
-export function playAnimation(animation) {
-  if (animation) {
-    animation.start(true, 1.0);
-  }
+export function loadAnimations(scene) {
+  // No need to load animations here since they are loaded with the model
 }
 
-export function stopAnimation(animation) {
-  if (animation) {
-    animation.stop();
+export function playNextAnimation() {
+  switch (currentAnimationIndex) {
+    case 0:
+      if (jumpAnim) {
+        console.log("Playing jump animation.");
+        jumpAnim.start(true, 1.0);
+      }
+      break;
+    case 1:
+      if (flipAnim) {
+        console.log("Playing flip animation.");
+        flipAnim.start(true, 1.0);
+      }
+      break;
+    case 2:
+      if (landAnim) {
+        console.log("Playing land animation.");
+        landAnim.start(true, 1.0);
+      }
+      break;
+    default:
+      break;
   }
+
+  currentAnimationIndex = (currentAnimationIndex + 1) % 3;
 }
