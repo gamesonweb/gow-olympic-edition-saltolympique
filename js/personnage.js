@@ -13,14 +13,16 @@ export class Personnage {
     this.score = score;
     this.rotationX = 0;
     this.rotationY = 0;
+    this.flipAnim = null; // Add flipAnim to store the flip animation
   }
 
   createCharacter(callback) {
-    loadolympianModel(this.scene, (olympianMesh) => {
+    loadolympianModel(this.scene, (olympianMesh, animations) => {
       if (olympianMesh) {
         this.character = olympianMesh;
         this.character.position = new BABYLON.Vector3(0, 0, 0);
-        this.character.scaling = new BABYLON.Vector3(200, 200, 200);
+        this.character.scaling = new BABYLON.Vector3(700, 700, 700);
+        this.flipAnim = animations.flipAnim; // Assign flipAnim from the loaded animations
         loadAnimations(this.scene);
         if (callback) callback(this.character);
       } else {
@@ -36,11 +38,11 @@ export class Personnage {
     }
 
     let animation = new BABYLON.Animation(
-      "jumpAnimation",
-      "position.y",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+        "jumpAnimation",
+        "position.y",
+        30,
+        BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
     );
 
     let keys = [];
@@ -54,9 +56,6 @@ export class Personnage {
       // Animation finished callback
       this.characterLand(); // Check if the character landed
       this.isJumping = false; // Reset jumping state
-      if (this.isFlipping) {
-        // this.scene.stopAnimation(this.character); // Stop the flip animation
-      }
       chargingBar.style.display = "none"; // Hide the charging bar
       chargingBar.dataset.charging = "false"; // Reset data attribute
       this.characterReset(); // Reset the character position
@@ -81,12 +80,11 @@ export class Personnage {
     if (this.rotationX > -0.8 && this.rotationX < 0.8) {
       console.log("Character landed successfully");
       this.score.increaseScore(300);
-      this.showFeedbackText("Successful Landing!", "green");
       return true;
     } else {
+      // JUMP FAILED
       console.log("Character landed unsuccessfully");
       this.score.resetScore();
-      this.showFeedbackText("Failed Landing!", "red");
       return false;
     }
   }
@@ -107,52 +105,15 @@ export class Personnage {
 
   characterFlip() {
     if (!this.character) {
-      console.error("Error: Character mesh not loaded.");
+      console.error("Character mesh not loaded.");
       return;
     }
 
-    let flipAnimation = new BABYLON.Animation(
-      "flipAnimation",
-      "rotation.x",
-      60,
-      BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
-
-    let keyFrames = [];
-    keyFrames.push({ frame: 0, value: this.character.rotation.y });
-    keyFrames.push({
-      frame: 120,
-      value: this.character.rotation.y + 2 * Math.PI,
-    });
-
-    flipAnimation.setKeys(keyFrames);
-
-    this.scene.beginDirectAnimation(
-      this.character,
-      [flipAnimation],
-      0,
-      120,
-      false,
-      1,
-      () => {
-        this.score.increaseScore(100); // Increase score by 100 points
-        this.score.updateCurrentScore(); // Update current score display
-
-        this.isFlipping = false; // The flip is over, allow another flip
-
-        // Calculate screen position for the score text
-        let screenPosition = BABYLON.Vector3.Project(
-          this.character.position,
-          BABYLON.Matrix.Identity(),
-          this.scene.getTransformMatrix(),
-          this.scene.activeCamera.viewport.toGlobal(
-            this.scene.getEngine().getRenderWidth(),
-            this.scene.getEngine().getRenderHeight()
-          )
-        );
-      }
-    );
+    if (this.flipAnim) {
+      this.flipAnim.start(true, 1.0, this.flipAnim.from, this.flipAnim.to, false);
+    } else {
+      console.error("Flip animation not found.");
+    }
   }
 
   handleRotation(inputStates) {
@@ -187,6 +148,12 @@ export class Personnage {
   update(inputStates) {
     if (this.isJumping) {
       this.handleRotation(inputStates);
+      if (inputStates.flipping && !this.isFlipping) {
+        this.isFlipping = true;
+        this.characterFlip();
+      } else if (!inputStates.flipping && this.isFlipping) {
+        this.isFlipping = false;
+      }
     }
   }
 
@@ -218,31 +185,5 @@ export class Personnage {
     this.score.updateCurrentScore();
     // Reset the rotation
     this.rotationX = 0;
-  }
-
-  showFeedbackText(message, color) {
-    let feedbackText = document.createElement("div");
-    feedbackText.className = "feedbackText";
-    feedbackText.innerHTML = message;
-    feedbackText.style.position = "absolute";
-    feedbackText.style.color = color;
-    feedbackText.style.fontSize = "24px";
-    feedbackText.style.fontWeight = "bold";
-    feedbackText.style.textShadow = "2px 2px 4px #000000";
-    feedbackText.style.left = "50%";
-    feedbackText.style.top = "20%";
-    feedbackText.style.transform = "translate(-50%, -50%)";
-    document.body.appendChild(feedbackText);
-
-    setTimeout(() => {
-      feedbackText.style.opacity = 0;
-      setTimeout(() => {
-        document.body.removeChild(feedbackText);
-      }, 1000);
-    }, 1000);
-  }
-
-  reset() {
-    this.characterReset();
   }
 }

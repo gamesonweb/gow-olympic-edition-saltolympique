@@ -16,7 +16,7 @@ export function loadModel(scene, characterFile, callback) {
                 characterSkeleton = skeletons[0];
                 if (characterFile === "Olympian.glb") {
                     jumpAnim = animationGroups.find(anim => anim.name === "jump");
-                    poseAnim = animationGroups.find(anim => anim.name === "pose");
+                    poseAnim = animationGroups.find(anim => anim.name === "Pose");
                     flipAnim = animationGroups.find(anim => anim.name === "flip");
                 } else if (characterFile === "granny.glb") {
                     jumpAnim = animationGroups.find(anim => anim.name === "Jump");

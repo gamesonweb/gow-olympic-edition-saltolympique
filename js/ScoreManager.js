@@ -27,7 +27,7 @@ export class ScoreManager {
         leaderboard.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
 
         const title = document.createElement("h2");
-        title.innerText = "Leaderboard";
+        title.innerText = "Classement des joeurs";
         leaderboard.appendChild(title);
 
         const list = document.createElement("ol");

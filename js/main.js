@@ -266,7 +266,7 @@ function updateChargingBar(chargeDuration) {
 
 function startTimer() {
   if (timerRunning) {
-    return; // Stop if the timer is already running
+    return; // Stop if   the timer is already running
   }
 
   timerRunning = true; // Set the timer as running
@@ -322,6 +322,13 @@ function endGame() {
     congratsMessage.style.textAlign = "center";
     congratsMessage.id = "congratsMessage"; // Set the ID to easily remove it later
     document.body.appendChild(congratsMessage);
+
+    // Show the character in pose animation
+    if (perso && perso.poseAnim) {
+      perso.character.position = new BABYLON.Vector3(0, 1.51, 0); // Position character
+      perso.character.scaling = new BABYLON.Vector3(20, 20, 20);
+      playAnimation(perso.poseAnim); // Play pose animation
+    }
 
     confetti({
       particleCount: 200,
