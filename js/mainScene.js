@@ -18,31 +18,35 @@ export function createScene(engine, canvas) {
   // Create ground
   let ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 60, height: 60 }, scene);
 
-  // Add a material for the ground
+// Add a material for the ground
   let groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
   groundMaterial.diffuseColor = new BABYLON.Color3(0.4, 0.8, 0.4);
   groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
   ground.material = groundMaterial;
 
-  // Create trampoline
+// Create trampoline
   let trampoline = BABYLON.MeshBuilder.CreateCylinder("trampoline", { diameter: 20, height: 1, tessellation: 24 }, scene);
   trampoline.position.y = 0.5;
+  trampoline.position.x = 0;
+  trampoline.position.z = 0;
 
   let trampolineMaterial = new BABYLON.StandardMaterial("trampolineMaterial", scene);
   trampolineMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2);
   trampolineMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
   trampoline.material = trampolineMaterial;
 
-  // Create trampoline mat
+// Create trampoline mat
   let trampolineMat = BABYLON.MeshBuilder.CreateDisc("trampolineMat", { radius: 9.5, tessellation: 24 }, scene);
   trampolineMat.position.y = 1.01;
+  trampolineMat.position.x = 0;
+  trampolineMat.position.z = 0;
 
   let matMaterial = new BABYLON.StandardMaterial("matMaterial", scene);
   matMaterial.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1);
   matMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
   trampolineMat.material = matMaterial;
 
-  // Create stands
+// Create stands
   let standMaterial = new BABYLON.StandardMaterial("standMaterial", scene);
   standMaterial.diffuseColor = new BABYLON.Color3(0.7, 0.7, 0.7);
   standMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
@@ -59,7 +63,7 @@ export function createScene(engine, canvas) {
   createStand(30, 0, 60, 10).rotation.y = Math.PI / 2; // Right stand
   createStand(-30, 0, 60, 10).rotation.y = Math.PI / 2; // Left stand
 
-  // Create audience seats
+// Create audience seats
   const createSeats = (x, y, z) => {
     let seat = BABYLON.MeshBuilder.CreateBox("seat", { width: 2, height: 1, depth: 2 }, scene);
     seat.position = new BABYLON.Vector3(x, y, z);
@@ -79,33 +83,28 @@ export function createScene(engine, canvas) {
   return scene;
 }
 
-
-export function createCamera(scene, canvas, target) {
-  // Create a universal camera
-  let camera = new BABYLON.FollowCamera(
-      "FollowCam",
-      new BABYLON.Vector3(0, 10, -10),
+export function createCamera(scene, canvas) {
+// Create an arc rotate camera
+  let camera = new BABYLON.ArcRotateCamera(
+"ArcRotateCamera",
+  BABYLON.Tools.ToRadians(50),
+      BABYLON.Tools.ToRadians(50),
+      150,
+      new BABYLON.Vector3(0, 0, 0),
       scene
-  );
+);
 
-  // The goal distance of camera from target
-  camera.radius = 40;
-  // The goal height of camera above local origin (centre) of target
-  camera.heightOffset = 5;
-  // The goal rotation of camera around local origin (centre) of target in x y plane
-  camera.rotationOffset = 0;
-  // Acceleration of camera in moving from current to goal position
-  camera.cameraAcceleration = 0.05;
-  // The speed at which acceleration is halted
-  camera.maxCameraSpeed = 20;
+// Set the camera properties to disable zoom and rotation controls
+  camera.lowerRadiusLimit = camera.upperRadiusLimit = camera.radius;
+  camera.lowerAlphaLimit = camera.upperAlphaLimit = camera.alpha;
+  camera.lowerBetaLimit = camera.upperBetaLimit = camera.beta;
 
-  // This attaches the camera to the canvas
+// This attaches the camera to the canvas
   camera.attachControl(canvas, true);
 
-  camera.lockedTarget = target;
   return camera;
 }
 
 export function modifySettings(inputStates) {
-  // Define any settings modification logic here
+// Define any settings modification logic here
 }

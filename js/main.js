@@ -2,6 +2,8 @@ import { createScene, modifySettings, createCamera } from "./mainScene.js";
 import { Personnage } from "./personnage.js";
 import { Score } from "./score.js";
 import { displayInstructionsHTML } from "./instructions.js";
+import { ScoreManager } from "./scoreManager.js";
+import { displayCharacterSelection } from "./characterSelection.js";
 
 let engine;
 let canvas;
@@ -15,15 +17,86 @@ let chargeDirection = 1;
 
 let perso;
 let score;
-let timerRunning = false;
+let scoreManager;
 
 const MAX_CHARGE_DURATION = 1000;
 
 let timerDisplay;
 let timerInterval;
 let timerSeconds = 60;
+let timerRunning = false;
 
-window.onload = startGame;
+window.onload = () => {
+  showStartAnimation();
+};
+
+function showStartAnimation() {
+  const overlay = document.getElementById("overlay");
+  overlay.innerHTML = ''; // Clear any existing content
+
+  const title = document.createElement("h1");
+  title.innerText = "SaltoOlympique";
+  title.className = "game-title";
+  overlay.appendChild(title);
+
+  // Confetti animation
+  confetti({
+    particleCount: 200,
+    spread: 70,
+    origin: { y: 0.6 }
+  });
+
+  setTimeout(() => {
+    title.style.position = 'fixed'; // Make the title stay in the same place
+    title.style.top = '20px';
+    title.style.left = '50%';
+    title.style.transform = 'translateX(-50%)';
+    title.style.zIndex = '1002'; // Ensure the title is above other elements
+
+    displayStartMenu();
+  }, 3000); // Show the start menu after 3 seconds
+}
+
+function displayStartMenu() {
+  const overlay = document.getElementById("overlay");
+  overlay.innerHTML = ''; // Clear any existing content
+
+  const menuContainer = document.createElement("div");
+  menuContainer.style.textAlign = "center";
+  menuContainer.style.color = "white";
+
+  const startButton = document.createElement("button");
+  startButton.innerText = "Démarrer le jeu";
+  startButton.style.margin = "10px";
+  startButton.style.padding = "10px 20px";
+  startButton.style.border = "none";
+  startButton.style.borderRadius = "5px";
+  startButton.style.backgroundColor = "#4CAF50";
+  startButton.style.color = "white";
+  startButton.style.cursor = "pointer";
+  startButton.addEventListener("click", () => {
+    overlay.innerHTML = ''; // Clear the overlay
+    startGame();
+  });
+
+  const instructionsButton = document.createElement("button");
+  instructionsButton.innerText = "Instructions";
+  instructionsButton.style.margin = "10px";
+  instructionsButton.style.padding = "10px 20px";
+  instructionsButton.style.border = "none";
+  instructionsButton.style.borderRadius = "5px";
+  instructionsButton.style.backgroundColor = "#2196F3";
+  instructionsButton.style.color = "white";
+  instructionsButton.style.cursor = "pointer";
+  instructionsButton.addEventListener("click", () => {
+    overlay.innerHTML = ''; // Clear the overlay
+    displayInstructionsHTML();
+  });
+
+  menuContainer.appendChild(startButton);
+  menuContainer.appendChild(instructionsButton);
+  overlay.appendChild(menuContainer);
+}
 
 function startGame(showInstructions = true) {
   canvas = document.getElementById("myCanvas");
@@ -31,38 +104,39 @@ function startGame(showInstructions = true) {
   scene = createScene(engine, canvas);
 
   score = new Score();
+  scoreManager = new ScoreManager();
+  scoreManager.displayLeaderboard(); // Display the leaderboard at the start of the game
 
-  perso = new Personnage(scene, score);
-  perso.createCharacter((loadedCharacter) => {
-    camera = createCamera(scene, canvas, loadedCharacter);
-    scene.activeCamera = camera;
+  displayCharacterSelection((characterFile) => {
+    perso = new Personnage(scene, score, characterFile);
+    perso.createCharacter((loadedCharacter) => {
+      camera = createCamera(scene, canvas, loadedCharacter);
+      scene.activeCamera = camera;
 
-    // Start the render loop only after the camera is set
-    engine.runRenderLoop(() => {
-      scene.render();
-      if (chargingBar && chargingBar.dataset.charging === "true") {
-        let chargeDuration = Date.now() - chargeStartTime;
-        updateChargingBar(chargeDuration);
-      }
-      perso.update(inputStates);
+      // Start the render loop only after the camera is set
+      engine.runRenderLoop(() => {
+        scene.render();
+        if (chargingBar && chargingBar.dataset.charging === "true") {
+          let chargeDuration = Date.now() - chargeStartTime;
+          updateChargingBar(chargeDuration);
+        }
+        perso.update(inputStates);
+      });
     });
+
+    chargingBar = createChargingBar();
+    score.ScoreDisplays();
+    if (showInstructions) displayInstructionsHTML();
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    window.addEventListener("resize", () => {
+      engine.resize();
+    });
+
+    modifySettings(inputStates);
   });
-
-  chargingBar = createChargingBar();
-
-  score.ScoreDisplays();
-  displayInstructionsHTML();
-
-  startTimer();
-
-  window.addEventListener("keydown", handleKeyDown);
-  window.addEventListener("keyup", handleKeyUp);
-
-  window.addEventListener("resize", () => {
-    engine.resize();
-  });
-
-  modifySettings(inputStates);
 }
 
 function handleKeyDown(event) {
@@ -93,7 +167,7 @@ function handleKeyUp(event) {
   if (event.code === "Space" && chargingBar.dataset.charging === "true") {
     let chargeDuration = Date.now() - chargeStartTime;
     let jumpHeight = perso.calculateJumpHeight(chargeDuration);
-    perso.characterJump(jumpHeight);
+    perso.characterJump(jumpHeight, chargingBar);
     chargingBar.style.display = "none";
     chargingBar.dataset.charging = "false";
     perso.isJumping = true;
@@ -102,18 +176,13 @@ function handleKeyUp(event) {
 
   if (event.code === "ArrowLeft") {
     inputStates.left = false;
-    inputStates.twistingLeft = false;
   }
   if (event.code === "ArrowRight") {
     inputStates.right = false;
-    inputStates.twistingRigth = false;
   }
-  if (event.code === "ArrowUp") {
+  if (event.code === "KeyF") {
     inputStates.flipping = false;
     perso.isFlipping = false;
-    inputStates.twistingLeft = false;
-    inputStates.twistingRigth = false;
-    perso.isTwisting = false;
   }
 }
 
@@ -157,11 +226,11 @@ function updateChargingBar(chargeDuration) {
 }
 
 function startTimer() {
-  if (timerInterval) {
-    console.log("Timer already running",timerInterval);
-
-    return; // Arrête la fonction si le timer est déjà en cours
+  if (timerRunning) {
+    return; // Stop if the timer is already running
   }
+
+  timerRunning = true; // Set the timer as running
 
   timerDisplay = document.createElement("div");
   timerDisplay.className = "timer";
@@ -179,11 +248,11 @@ function startTimer() {
     if (timerSeconds <= 10) {
       timerDisplay.style.fontSize = "40px";
       timerDisplay.style.textShadow =
-        "1px 1px 1px #ff0000, 0.5px 0.5px 1px #cc0000, 1px 0.5px 1px #ff0000, 0.75px 0.75px 1px #cc0000, 1.25px 0.75px 1px #ff0000, 1px 1px 1px #cc0000, 1.5px 1px 1px #ff0000, 1.25px 1.25px 1px #cc0000, 1.75px 1.25px 1px #ff0000, 1.5px 1.5px 1px #cc0000, 2px 1.5px 1px #ff0000, 1.75px 1.75px 1px #cc0000, 2.25px 1.75px 1px #ff0000";
+          "1px 1px 1px #ff0000, 0.5px 0.5px 1px #cc0000, 1px 0.5px 1px #ff0000, 0.75px 0.75px 1px #cc0000, 1.25px 0.75px 1px #ff0000, 1px 1px 1px #cc0000, 1.5px 1px 1px #ff0000, 1.25px 1.25px 1px #cc0000, 1.75px 1.25px 1px #ff0000, 1.5px 1.5px 1px #cc0000, 2px 1.5px 1px #ff0000, 1.75px 1.75px 1px #cc0000, 2.25px 1.75px 1px #ff0000";
     }
     if (timerSeconds === 0) {
       clearInterval(timerInterval);
-      console.log("Timer ended",timerInterval);
+      timerRunning = false; // Reset the timer running flag
       endGame();
     }
   }, 1000);
@@ -208,7 +277,7 @@ function endGame() {
   endMessage.style.fontWeight = "bold";
   endMessage.style.textAlign = "center";
   document.body.appendChild(endMessage);
-  
+
   let inputPseudo = document.createElement("input");
   inputPseudo.type = "text";
   inputPseudo.placeholder = "Entrez votre pseudo";
@@ -225,24 +294,44 @@ function endGame() {
   restartButton.style.left = "50%";
   restartButton.style.transform = "translate(-50%, -50%)";
   restartButton.addEventListener("click", () => {
-      let pseudo = inputPseudo.value;
-      if (pseudo) {
-          console.log(`Pseudo: ${pseudo}, Score: ${score.getHighScore()}`);
-          restartGame();
-          restartButton.remove(); // Supprime le bouton reset après avoir réinitialisé le jeu
-          inputPseudo.remove(); 
-          endMessage.remove();
-          timerDisplay.remove();
-
-      } else {
-          alert("Veuillez entrer un pseudo.");
-      }
+    let pseudo = inputPseudo.value;
+    if (pseudo) {
+      scoreManager.addScore(pseudo, score.getHighScore());
+      scoreManager.displayLeaderboard();
+      console.log(`Pseudo: ${pseudo}, Score: ${score.getHighScore()}`);
+      restartGame();
+      restartButton.remove(); // Supprime le bouton reset après avoir réinitialisé le jeu
+      inputPseudo.remove();
+      endMessage.remove();
+      timerDisplay.remove();
+    } else {
+      alert("Veuillez entrer un pseudo.");
+    }
   });
   document.body.appendChild(restartButton);
+
+  let quitButton = document.createElement("button");
+  quitButton.innerText = "Quitter";
+  quitButton.style.position = "absolute";
+  quitButton.style.top = "60%";
+  quitButton.style.left = "50%";
+  quitButton.style.transform = "translate(-50%, -50%)";
+  quitButton.addEventListener("click", () => {
+    scoreManager.addScore(inputPseudo.value, score.getHighScore());
+    scoreManager.displayLeaderboard();
+    clearDynamicElements();
+    endMessage.remove();
+    inputPseudo.remove();
+    quitButton.remove();
+    restartButton.remove();
+    quitButton.remove();
+  });
+  document.body.appendChild(quitButton);
 }
+
 function restartGame() {
   // Clear dynamic game elements
-  const elementsToRemove = document.querySelectorAll("#chargingBar, #timerDisplay, #endMessage, #instructions, #resetButton");
+  const elementsToRemove = document.querySelectorAll("#chargingBar, .timer, #endMessage, #instructions, #leaderboard,#quitButton");
   elementsToRemove.forEach(element => element.remove());
 
   // Reset game variables
@@ -253,23 +342,22 @@ function restartGame() {
 
   // Reset score and timer
   timerSeconds = 60;  // Reset timer to 1 minute
-  if (perso && perso.cube) {
-    perso.cube.animations.forEach(animation => {
-      perso.scene.stopAnimation(perso.cube, animation);
-    });
-    perso.cube.animations = [];
+  if (perso) {
+    perso.reset();
+    inputStates = {}; // Reset input states
   }
   if (timerInterval) {
     clearInterval(timerInterval);
     timerInterval = null; // Reset the timer interval variable
   }
+  score.removeScoreDisplays(); // Ensure score displays are removed
   // Restart the game without displaying instructions
   startGame(false);  // Pass false to indicate not to show instructions
 
-  if (perso) {
-    perso.cubeReset();
-    inputStates = {}; // Reset input states
-  }
-  console.log("Timer restarted",timerInterval);
+  console.log("Timer restarted", timerInterval);
+}
 
+function clearDynamicElements() {
+  const elementsToRemove = document.querySelectorAll("#chargingBar, .timer, #endMessage, #instructions, #leaderboard, #scoreStreak, #currentScore");
+  elementsToRemove.forEach(element => element.remove());
 }
