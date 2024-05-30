@@ -80,7 +80,7 @@ function handleKeyDown(event) {
   if (event.code === "ArrowRight") {
     inputStates.right = true;
   }
-  if (event.code === "KeyF" && perso.isJumping && !inputStates.flipping) {
+  if (event.code === "ArrowUp" && perso.isJumping && !inputStates.flipping) {
     inputStates.flipping = true;
     perso.isFlipping = true;
   }
@@ -117,7 +117,7 @@ function handleKeyUp(event) {
     inputStates.twistingRigth = false;
 
   }
-  if (event.code === "KeyF") {
+  if (event.code === "ArrowUp") {
     inputStates.flipping = false;
     perso.isFlipping = false;
     inputStates.twistingLeft= false;
