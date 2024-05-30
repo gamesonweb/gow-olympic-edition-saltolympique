@@ -46,6 +46,7 @@ function startGame(showInstructions = true) {
     score.ScoreDisplays();
   }
 
+
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
 
@@ -75,8 +76,7 @@ function handleKeyDown(event) {
       chargingBar.style.width = "0";
       chargingBar.dataset.charging = "true";
       startTimer();
-      
-    } 
+    }
   }
 
   if (event.code === "ArrowLeft") {
@@ -89,13 +89,23 @@ function handleKeyDown(event) {
     inputStates.flipping = true;
     perso.isFlipping = true;
   }
-  if (inputStates.flipping  && perso.isJumping && !inputStates.twistingRigth && inputStates.right){
+  if (
+    inputStates.flipping &&
+    perso.isJumping &&
+    !inputStates.twistingRigth &&
+    inputStates.right
+  ) {
     inputStates.twistingRigth = true;
     perso.isTwisting = true;
-    
+
     console.log("twistppipipipiing");
   }
-  if (inputStates.flipping  && perso.isJumping && !inputStates.twistingLeft && inputStates.left){
+  if (
+    inputStates.flipping &&
+    perso.isJumping &&
+    !inputStates.twistingLeft &&
+    inputStates.left
+  ) {
     inputStates.twistingLeft = true;
     perso.isTwisting = true;
     console.log("ca twits twisting");
@@ -120,15 +130,13 @@ function handleKeyUp(event) {
   if (event.code === "ArrowRight") {
     inputStates.right = false;
     inputStates.twistingRigth = false;
-
   }
   if (event.code === "ArrowUp") {
     inputStates.flipping = false;
     perso.isFlipping = false;
-    inputStates.twistingLeft= false;
+    inputStates.twistingLeft = false;
     inputStates.twistingRigth = false;
     perso.isTwisting = false;
-
   }
 }
 
@@ -171,15 +179,15 @@ function updateChargingBar(chargeDuration) {
   }
 }
 
-
-
 function startTimer() {
   if (timerInterval) {
     console.log("Timer already running",timerInterval);
+
     return; // Arrête la fonction si le timer est déjà en cours
   }
 
   timerDisplay = document.createElement("div");
+  timerDisplay.className = "timer";
   timerDisplay.innerText = formatTime(timerSeconds);
   timerDisplay.style.position = "absolute";
   timerDisplay.style.bottom = "10px";
@@ -191,7 +199,11 @@ function startTimer() {
   timerInterval = setInterval(() => {
     timerSeconds--;
     timerDisplay.innerText = formatTime(timerSeconds);
-
+    if (timerSeconds <= 10) {
+      timerDisplay.style.fontSize = "40px";
+      timerDisplay.style.textShadow =
+        "1px 1px 1px #ff0000, 0.5px 0.5px 1px #cc0000, 1px 0.5px 1px #ff0000, 0.75px 0.75px 1px #cc0000, 1.25px 0.75px 1px #ff0000, 1px 1px 1px #cc0000, 1.5px 1px 1px #ff0000, 1.25px 1.25px 1px #cc0000, 1.75px 1.25px 1px #ff0000, 1.5px 1.5px 1px #cc0000, 2px 1.5px 1px #ff0000, 1.75px 1.75px 1px #cc0000, 2.25px 1.75px 1px #ff0000";
+    }
     if (timerSeconds === 0) {
       clearInterval(timerInterval);
       console.log("Timer ended",timerInterval);
@@ -203,7 +215,7 @@ function startTimer() {
 function formatTime(seconds) {
   let minutes = Math.floor(seconds / 60);
   let remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
 }
 
 function endGame() {
@@ -284,7 +296,3 @@ function restartGame() {
   console.log("Timer restarted",timerInterval);
 
 }
-
-
-
-
