@@ -123,3 +123,17 @@ body {
   background: none;
   border: none;
 }
+
+.timer {
+  position: absolute;
+  boto: 10px;
+  right: 10px;
+  color: #fde9ff;
+  font-weight: 900;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 1px #00ff00, 0.5px 0.5px 1px #00cc00,
+    1px 0.5px 1px #00ff00, 0.75px 0.75px 1px #00cc00, 1.25px 0.75px 1px #00ff00,
+    1px 1px 1px #00cc00, 1.5px 1px 1px #00ff00, 1.25px 1.25px 1px #00cc00,
+    1.75px 1.25px 1px #00ff00, 1.5px 1.5px 1px #00cc00, 2px 1.5px 1px #00ff00,
+    1.75px 1.75px 1px #00cc00, 2.25px 1.75px 1px #00ff00;
+}
