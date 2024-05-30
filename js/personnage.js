@@ -1,4 +1,8 @@
-import { loadGrannyModel, loadAnimations, playNextAnimation } from './granny.js';
+import {
+  loadolympianModel,
+  loadAnimations,
+  playNextAnimation,
+} from "./Olympian.js";
 
 export class Personnage {
   constructor(scene, score) {
@@ -12,11 +16,11 @@ export class Personnage {
   }
 
   createCharacter(callback) {
-    loadGrannyModel(this.scene, (grannyMesh) => {
-      if (grannyMesh) {
-        this.character = grannyMesh;
+    loadolympianModel(this.scene, (olympianMesh) => {
+      if (olympianMesh) {
+        this.character = olympianMesh;
         this.character.position = new BABYLON.Vector3(0, 0, 0);
-        this.character.scaling = new BABYLON.Vector3(20, 20, 20);
+        this.character.scaling = new BABYLON.Vector3(200, 200, 200);
         loadAnimations(this.scene);
         if (callback) callback(this.character);
       } else {
@@ -32,11 +36,11 @@ export class Personnage {
     }
 
     let animation = new BABYLON.Animation(
-        "jumpAnimation",
-        "position.y",
-        30,
-        BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+      "jumpAnimation",
+      "position.y",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
     );
 
     let keys = [];
@@ -107,43 +111,46 @@ export class Personnage {
     }
 
     let flipAnimation = new BABYLON.Animation(
-        "flipAnimation",
-        "rotation.x",
-        60,
-        BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+      "flipAnimation",
+      "rotation.x",
+      60,
+      BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     );
 
     let keyFrames = [];
     keyFrames.push({ frame: 0, value: this.character.rotation.y });
-    keyFrames.push({ frame: 120, value: this.character.rotation.y + 2 * Math.PI });
+    keyFrames.push({
+      frame: 120,
+      value: this.character.rotation.y + 2 * Math.PI,
+    });
 
     flipAnimation.setKeys(keyFrames);
 
     this.scene.beginDirectAnimation(
-        this.character,
-        [flipAnimation],
-        0,
-        120,
-        false,
-        1,
-        () => {
-          this.score.increaseScore(100); // Increase score by 100 points
-          this.score.updateCurrentScore(); // Update current score display
+      this.character,
+      [flipAnimation],
+      0,
+      120,
+      false,
+      1,
+      () => {
+        this.score.increaseScore(100); // Increase score by 100 points
+        this.score.updateCurrentScore(); // Update current score display
 
-          this.isFlipping = false; // The flip is over, allow another flip
+        this.isFlipping = false; // The flip is over, allow another flip
 
-          // Calculate screen position for the score text
-          let screenPosition = BABYLON.Vector3.Project(
-              this.character.position,
-              BABYLON.Matrix.Identity(),
-              this.scene.getTransformMatrix(),
-              this.scene.activeCamera.viewport.toGlobal(
-                  this.scene.getEngine().getRenderWidth(),
-                  this.scene.getEngine().getRenderHeight()
-              )
-          );
-        }
+        // Calculate screen position for the score text
+        let screenPosition = BABYLON.Vector3.Project(
+          this.character.position,
+          BABYLON.Matrix.Identity(),
+          this.scene.getTransformMatrix(),
+          this.scene.activeCamera.viewport.toGlobal(
+            this.scene.getEngine().getRenderWidth(),
+            this.scene.getEngine().getRenderHeight()
+          )
+        );
+      }
     );
   }
 

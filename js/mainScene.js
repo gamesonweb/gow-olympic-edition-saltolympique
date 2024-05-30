@@ -26,6 +26,8 @@ export function createScene(engine, canvas) {
     scene
   );
   pointLight.intensity = 0.6;
+
+  return scene;
 }
 
 export function createCamera(scene, canvas, target) {
