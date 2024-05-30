@@ -31,9 +31,20 @@ function startGame() {
   score = new Score();
 
   perso = new Personnage(scene, score);
-  perso.createCharacter();
+  perso.createCharacter((loadedCharacter) => {
+    camera = createCamera(scene, canvas, loadedCharacter);
+    scene.activeCamera = camera;
 
-  camera = createCamera(scene, canvas, perso.cube);
+    // Start the render loop only after the camera is set
+    engine.runRenderLoop(() => {
+      scene.render();
+      if (chargingBar && chargingBar.dataset.charging === "true") {
+        let chargeDuration = Date.now() - chargeStartTime;
+        updateChargingBar(chargeDuration);
+      }
+      perso.update(inputStates);
+    });
+  });
 
   chargingBar = createChargingBar();
 
@@ -44,15 +55,6 @@ function startGame() {
 
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
-
-  engine.runRenderLoop(() => {
-    scene.render();
-    if (chargingBar && chargingBar.dataset.charging === "true") {
-      let chargeDuration = Date.now() - chargeStartTime;
-      updateChargingBar(chargeDuration);
-    }
-    perso.update(inputStates);
-  });
 
   window.addEventListener("resize", () => {
     engine.resize();
@@ -88,7 +90,7 @@ function handleKeyUp(event) {
   if (event.code === "Space" && chargingBar.dataset.charging === "true") {
     let chargeDuration = Date.now() - chargeStartTime;
     let jumpHeight = perso.calculateJumpHeight(chargeDuration);
-    perso.cubeJump(jumpHeight);
+    perso.characterJump(jumpHeight);
     chargingBar.style.display = "none";
     chargingBar.dataset.charging = "false";
     perso.isJumping = true;
@@ -146,8 +148,6 @@ function updateChargingBar(chargeDuration) {
   }
 }
 
-
-
 function startTimer() {
   let timerSeconds = 60; // Durée du timer en secondes
 
@@ -191,4 +191,3 @@ function endGame() {
   endMessage.style.textAlign = "center";
   document.body.appendChild(endMessage);
 }
-

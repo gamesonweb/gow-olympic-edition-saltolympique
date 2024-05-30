@@ -79,18 +79,19 @@ export function createScene(engine, canvas) {
   return scene;
 }
 
+
 export function createCamera(scene, canvas, target) {
   // Create a follow camera
   let camera = new BABYLON.FollowCamera(
-    "FollowCam",
-    new BABYLON.Vector3(0, 100, -100),
-    scene
+      "FollowCam",
+      new BABYLON.Vector3(0, 10, -10),
+      scene
   );
 
   // The goal distance of camera from target
   camera.radius = 40;
   // The goal height of camera above local origin (centre) of target
-  camera.heightOffset = 50;
+  camera.heightOffset = 5;
   // The goal rotation of camera around local origin (centre) of target in x y plane
   camera.rotationOffset = 0;
   // Acceleration of camera in moving from current to goal position
@@ -102,10 +103,6 @@ export function createCamera(scene, canvas, target) {
   camera.attachControl(canvas, true);
 
   camera.lockedTarget = target;
-   scene.onBeforeRenderObservable.add(() => {
-    camera.position.x = camera.lockedTarget.position.x;
-    camera.position.z = camera.lockedTarget.position.z - 50;
-  });
   return camera;
 }
 

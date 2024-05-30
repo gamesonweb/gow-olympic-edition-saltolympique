@@ -12,8 +12,8 @@ export class Score {
   }
 
   decreaseScore(points) {
-    this.score -= points;
-    this.showScoreText("-" + point);
+    this.score -= points; // Corrected 'point' to 'points'
+    this.showScoreText("-" + points);
     this.updateCurrentScore();
   }
 
@@ -29,6 +29,7 @@ export class Score {
   setFinalScore() {
     this.finalScore = this.scoreStreak;
   }
+
   getHighScore() {
     return this.highScore;
   }
@@ -39,11 +40,11 @@ export class Score {
     scoreStreakElement.id = "scoreStreak";
     scoreStreakElement.className = "scoreStreak"; // Add the class name
     scoreStreakElement.innerHTML =
-      "<span data-text='Score Streak: " +
-      this.scoreStreak +
-      "'>Score Streak: " +
-      this.scoreStreak +
-      "</span>";
+        "<span data-text='Score Streak: " +
+        this.scoreStreak +
+        "'>Score Streak: " +
+        this.scoreStreak +
+        "</span>";
     scoreStreakElement.style.position = "absolute";
     scoreStreakElement.style.bottom = "10px";
     scoreStreakElement.style.right = "10px";
@@ -60,11 +61,11 @@ export class Score {
     currentScoreElement.id = "currentScore";
     currentScoreElement.className = "currentScore"; // Add the class name
     currentScoreElement.innerHTML =
-      "<span data-text='Current Jump Score: " +
-      this.score +
-      "'>Current Jump Score: " +
-      this.score +
-      "</span>";
+        "<span data-text='Current Jump Score: " +
+        this.score +
+        "'>Current Jump Score: " +
+        this.score +
+        "</span>";
     currentScoreElement.style.position = "absolute";
     currentScoreElement.style.top = "10px";
     currentScoreElement.style.left = "10px";
@@ -79,20 +80,20 @@ export class Score {
   updatescoreStreak() {
     let scoreStreakElement = document.getElementById("scoreStreak");
     scoreStreakElement.innerHTML =
-      "<span data-text='Score Streak: " +
-      this.scoreStreak +
-      "'>Score Streak: " +
-      this.scoreStreak +
-      "</span>";
+        "<span data-text='Score Streak: " +
+        this.scoreStreak +
+        "'>Score Streak: " +
+        this.scoreStreak +
+        "</span>";
   }
   updateCurrentScore() {
     let currentScoreElement = document.getElementById("currentScore");
     currentScoreElement.innerHTML =
-      "<span data-text='Current Jump Score: " +
-      this.score +
-      "'>Current Jump Score: " +
-      this.score +
-      "</span>";
+        "<span data-text='Current Jump Score: " +
+        this.score +
+        "'>Current Jump Score: " +
+        this.score +
+        "</span>";
   }
 
   ScoreDisplays() {
