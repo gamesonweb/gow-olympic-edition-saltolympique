@@ -138,6 +138,6 @@ export class Score {
         document.body.removeChild(scoreText);
       }, 1000);
     }, 1000);
-  }
   
-}
+  }}
+
