@@ -21,7 +21,7 @@ const MAX_CHARGE_DURATION = 1000;
 
 let timerDisplay;
 let timerInterval;
-let timerSeconds = 10;
+let timerSeconds = 60;
 
 window.onload = startGame;
 
