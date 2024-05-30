@@ -81,7 +81,7 @@ export function createScene(engine, canvas) {
 
 
 export function createCamera(scene, canvas, target) {
-  // Create a follow camera
+  // Create a universal camera
   let camera = new BABYLON.FollowCamera(
       "FollowCam",
       new BABYLON.Vector3(0, 10, -10),
