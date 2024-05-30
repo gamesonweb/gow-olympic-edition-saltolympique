@@ -1,5 +1,5 @@
 let olympianSkeleton; // Variable to store skeleton
-let jumpAnim, landAnim, flipAnim; // Variables to store animation groups
+let poseAnim, flipAnim, jumpAnim; // Variables to store animation groups
 let currentAnimationIndex = 0; // Initialize currentAnimationIndex
 
 let path = "assets/models";
@@ -7,39 +7,37 @@ console.log(path);
 
 export function loadolympianModel(scene, callback) {
   BABYLON.SceneLoader.ImportMesh(
-    "",
-    "assets/models/",
-    "Olympian.glb",
-    scene,
-    (meshes, particleSystems, skeletons, animationGroups) => {
-      if (meshes.length > 0) {
-        let olympianMesh = meshes[0];
-        olympianMesh.position = new BABYLON.Vector3(0, 0, 0);
-        olympianMesh.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
+      "",
+      "assets/models/",
+      "Olympian.glb",
+      scene,
+      (meshes, particleSystems, skeletons, animationGroups) => {
+        if (meshes.length > 0) {
+          let olympianMesh = meshes[0];
 
-        // Set the skeleton and animations
-        olympianSkeleton = skeletons[0];
-        jumpAnim = animationGroups.find((anim) => anim.name === "Jump");
-        landAnim = animationGroups.find((anim) => anim.name === "Landing");
-        flipAnim = animationGroups.find((anim) => anim.name === "FLIP");
+          // Set the skeleton and animations
+          olympianSkeleton = skeletons[0];
+          jumpAnim = animationGroups.find((anim) => anim.name === "jump");
+          poseAnim = animationGroups.find((anim) => anim.name === "pose");
+          flipAnim = animationGroups.find((anim) => anim.name === "flip");
 
-        // Log position and visibility
-        console.log(`olympian position: ${olympianMesh.position}`);
-        console.log(`olympian scaling: ${olympianMesh.scaling}`);
-        console.log(`olympian is visible: ${olympianMesh.isVisible}`);
+          // Log position and visibility
+          console.log(`olympian position: ${olympianMesh.position}`);
+          console.log(`olympian scaling: ${olympianMesh.scaling}`);
+          console.log(`olympian is visible: ${olympianMesh.isVisible}`);
 
-        console.log("olympian model loaded successfully.");
+          console.log("olympian model loaded successfully.");
 
-        // Call the callback with the mesh
-        callback(olympianMesh);
-      } else {
-        console.error("olympian model not loaded. No meshes found.");
+          // Call the callback with the mesh
+          callback(olympianMesh);
+        } else {
+          console.error("olympian model not loaded. No meshes found.");
+        }
+      },
+      null,
+      (scene, message, exception) => {
+        console.error(`Error loading olympian model: ${message}`, exception);
       }
-    },
-    null,
-    (scene, message, exception) => {
-      console.error(`Error loading olympian model: ${message}`, exception);
-    }
   );
 }
 
@@ -62,9 +60,9 @@ export function playNextAnimation() {
       }
       break;
     case 2:
-      if (landAnim) {
-        console.log("Playing land animation.");
-        landAnim.start(true, 1.0);
+      if (poseAnim) {
+        console.log("Playing pose animation.");
+        poseAnim.start(true, 1.0);
       }
       break;
     default:

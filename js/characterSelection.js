@@ -1,7 +1,7 @@
 export function displayCharacterSelection(callback) {
     const characters = [
         { name: "Granny", file: "granny.glb" },
-        { name: "Character1", file: "BMW_M3.glb" },
+        { name: "BG", file: "Olympian.glb" },
         { name: "Character2", file: "knight1.glb" }
     ];
 
