@@ -22,7 +22,6 @@ export class Score {
     this.updateCurrentScore();
   }
   resetHighScore() {
-    scoreStreakElement.remove();
     this.scoreStreak = 0;
     this.updatescoreStreak();
   }
@@ -124,17 +123,22 @@ export class Score {
     scoreText.style.fontSize = "24px";
     scoreText.style.fontWeight = "bold";
     scoreText.style.textShadow = "2px 2px 4px #000000";
-    scoreText.style.left = 310 + "px";
-    scoreText.style.top = 300 + "px";
+
+    // Calculer la position verticale en fonction du nombre de scores déjà affichés
+    let verticalOffset = document.querySelectorAll('.scoreText').length * 50; // Décalage de 50px pour chaque score
+    let horizontalOffset = Math.random() * 200 - 50; // Décalage horizontal aléatoire 
+    scoreText.style.left = horizontalOffset+100 + "px";
+    scoreText.style.top = 300 + verticalOffset + "px"; // Appliquer le décalage vertical
     document.body.appendChild(scoreText);
 
-    // Animate the text
+    // Animer le texte
     setTimeout(() => {
       scoreText.style.opacity = 0;
-      scoreText.style.top = 300 - 50 + "px"; // Move up
+      scoreText.style.top = 300 + verticalOffset - 50 + "px"; // Déplacer vers le haut
       setTimeout(() => {
         document.body.removeChild(scoreText);
       }, 1000);
     }, 1000);
-  }
-}
+  
+  }}
+
