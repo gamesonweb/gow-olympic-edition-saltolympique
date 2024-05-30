@@ -192,6 +192,7 @@ function startTimer() {
     timerSeconds--;
     timerDisplay.innerText = formatTime(timerSeconds);
     if (timerSeconds <= 10) {
+      timerDisplay.style.fontSize = "40px";
       timerDisplay.style.textShadow =
         "1px 1px 1px #ff0000, 0.5px 0.5px 1px #cc0000, 1px 0.5px 1px #ff0000, 0.75px 0.75px 1px #cc0000, 1.25px 0.75px 1px #ff0000, 1px 1px 1px #cc0000, 1.5px 1px 1px #ff0000, 1.25px 1.25px 1px #cc0000, 1.75px 1.25px 1px #ff0000, 1.5px 1.5px 1px #cc0000, 2px 1.5px 1px #ff0000, 1.75px 1.75px 1px #cc0000, 2.25px 1.75px 1px #ff0000";
     }
