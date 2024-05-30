@@ -5,8 +5,8 @@ let currentAnimationIndex = 0; // Initialize currentAnimationIndex
 export function loadGrannyModel(scene, callback) {
   BABYLON.SceneLoader.ImportMesh(
     "",
-    "",
-    "assets/scene.babylon",
+    "../assets/",
+    "scene.babylon",
     scene,
     (meshes, particleSystems, skeletons, animationGroupsS) => {
       let grannyMesh = meshes[0];
