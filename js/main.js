@@ -20,6 +20,7 @@ const MAX_CHARGE_DURATION = 1000;
 
 let timerDisplay;
 let timerInterval;
+let timerSeconds = 60;
 
 window.onload = startGame;
 
@@ -174,7 +175,7 @@ function startTimer() {
 function formatTime(seconds) {
   let minutes = Math.floor(seconds / 60);
   let remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
 }
 
 function endGame() {
