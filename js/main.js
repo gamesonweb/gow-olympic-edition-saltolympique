@@ -20,10 +20,11 @@ let score;
 let scoreManager;
 
 const MAX_CHARGE_DURATION = 1000;
+const INITIAL_TIMER_SECONDS = 60; // Initial timer value
 
 let timerDisplay;
 let timerInterval;
-let timerSeconds = 60;
+let timerSeconds = INITIAL_TIMER_SECONDS;
 let timerRunning = false;
 let playerName = ""; // New variable to store the player's name
 
@@ -394,7 +395,7 @@ function restartGame() {
   timerRunning = false;
 
   // Reset score and timer
-  timerSeconds = 60;  // Reset timer to 1 minute
+  timerSeconds = INITIAL_TIMER_SECONDS;  // Reset timer to initial value
   if (perso) {
     perso.reset();
     inputStates = {}; // Reset input states
