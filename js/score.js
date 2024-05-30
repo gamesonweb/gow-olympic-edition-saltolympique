@@ -21,6 +21,11 @@ export class Score {
     this.score = 0;
     this.updateCurrentScore();
   }
+  resetHighScore() {
+    scoreStreakElement.remove();
+    this.scoreStreak = 0;
+    this.updatescoreStreak();
+  }
 
   getScore() {
     return this.score;

@@ -3,10 +3,10 @@ export function displayInstructionsHTML() {
   instructionsContainer.id = "instructions";
   instructionsContainer.className = "instructions";
   instructionsContainer.innerHTML = `
-        <p>Press space bar to load jump</p>
-        <p>Release to jump</p>
-        <p>Press f to flip</p>
-        <p>Mind your landing !!! </p>
+        <p>Charge le saut avec la barre ESPACE</p>
+        <p>Relâche pour SAUTER !</p>
+        <p>Utilise les flèches pour faires des FIGURES !</p>
+        <p>ATTENTION à l'ATTERISSAGE !!! </p>
     `;
   document.body.appendChild(instructionsContainer);
   const closeButton = document.createElement("button");
