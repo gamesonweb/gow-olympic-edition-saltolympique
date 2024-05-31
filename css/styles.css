@@ -1,8 +1,10 @@
 body {
   margin: 0;
   padding: 0;
-  background-image: url("assets\image\Fond.png");
   color: white;
+  background-image: url("../assets/image/Fond.png");
+  background-size: cover;
+  background-position: center;
   font-family: "Arial", sans-serif;
 }
 
@@ -22,7 +24,9 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-image: url("../assets/image/Fond.png");
+  background-size: cover;
+  background-position: center;
   border-radius: 15px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
   max-width: 90%;
