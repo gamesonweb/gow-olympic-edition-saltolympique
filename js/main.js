@@ -34,26 +34,26 @@ window.onload = () => {
 
 function showStartAnimation() {
   const overlay = document.getElementById("overlay");
-  overlay.innerHTML = ''; // Clear any existing content
+  overlay.innerHTML = ""; // Clear any existing content
 
   const title = document.createElement("h1");
-  title.innerText = "SaltoOlympique";
+  title.innerText = "SaltOlympique";
   title.className = "game-title";
   overlay.appendChild(title);
 
-  // Confetti animation
-  confetti({
-    particleCount: 200,
-    spread: 70,
-    origin: { y: 0.6 }
-  });
+  // // Confetti animation
+  // confetti({
+  //   particleCount: 200,
+  //   spread: 70,
+  //   origin: { y: 0.6 },
+  // });
 
   setTimeout(() => {
-    title.style.position = 'fixed'; // Make the title stay in the same place
-    title.style.top = '20px';
-    title.style.left = '50%';
-    title.style.transform = 'translateX(-50%)';
-    title.style.zIndex = '1002'; // Ensure the title is above other elements
+    title.style.position = "fixed"; // Make the title stay in the same place
+    title.style.top = "20px";
+    title.style.left = "50%";
+    title.style.transform = "translateX(-50%)";
+    title.style.zIndex = "1002"; // Ensure the title is above other elements
 
     displayPseudoForm(); // Show the pseudo form after the animation
   }, 3000); // Show the start menu after 3 seconds
@@ -61,7 +61,7 @@ function showStartAnimation() {
 
 function displayPseudoForm() {
   const overlay = document.getElementById("overlay");
-  overlay.innerHTML = ''; // Clear any existing content
+  overlay.innerHTML = ""; // Clear any existing content
 
   const formContainer = document.createElement("div");
   formContainer.style.textAlign = "center";
@@ -81,9 +81,6 @@ function displayPseudoForm() {
   submitButton.style.padding = "10px 20px";
   submitButton.style.border = "none";
   submitButton.style.borderRadius = "5px";
-  submitButton.style.backgroundColor = "#4CAF50";
-  submitButton.style.color = "white";
-  submitButton.style.cursor = "pointer";
   submitButton.addEventListener("click", () => {
     if (inputPseudo.value.trim() !== "") {
       playerName = inputPseudo.value.trim();
@@ -100,7 +97,7 @@ function displayPseudoForm() {
 
 function displayStartMenu() {
   const overlay = document.getElementById("overlay");
-  overlay.innerHTML = ''; // Clear any existing content
+  overlay.innerHTML = ""; // Clear any existing content
 
   const menuContainer = document.createElement("div");
   menuContainer.style.textAlign = "center";
@@ -116,7 +113,7 @@ function displayStartMenu() {
   startButton.style.color = "white";
   startButton.style.cursor = "pointer";
   startButton.addEventListener("click", () => {
-    overlay.innerHTML = ''; // Clear the overlay
+    overlay.innerHTML = ""; // Clear the overlay
     displayPseudoForm(); // Show the pseudo form before starting the game
   });
 
@@ -130,7 +127,7 @@ function displayStartMenu() {
   instructionsButton.style.color = "white";
   instructionsButton.style.cursor = "pointer";
   instructionsButton.addEventListener("click", () => {
-    overlay.innerHTML = ''; // Clear the overlay
+    overlay.innerHTML = ""; // Clear the overlay
     displayInstructionsHTML();
   });
 
@@ -149,7 +146,7 @@ function startGame(characterFile) {
   scoreManager.displayLeaderboard(); // Display the leaderboard at the start of the game
   canvas.width = window.innerWidth - 10;
   canvas.height = window.innerHeight - 10;
-  
+
   perso = new Personnage(scene, score, characterFile);
   perso.createCharacter((loadedCharacter) => {
     camera = createCamera(scene, canvas, loadedCharacter);
@@ -175,7 +172,8 @@ function startGame(characterFile) {
 
   window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;  });
+    canvas.height = window.innerHeight;
+  });
 
   modifySettings(inputStates);
 }
@@ -218,7 +216,7 @@ function handleKeyDown(event) {
     console.log("twistppipipipiing");
   }
   if (
-     inputStates.flipping&&
+    inputStates.flipping &&
     perso.isJumping &&
     !inputStates.twistingLeft &&
     inputStates.left
@@ -239,16 +237,15 @@ function handleKeyDown(event) {
     console.log("twistppipipipiing");
   }
   if (
-    inputStates.frontflipping&&
-   perso.isJumping &&
-   !inputStates.fronttwistingLeft &&
-   inputStates.left
- ) {
-   inputStates.fronttwistingLeft = true;
-   perso.isFrontTwisting = true;
-   console.log("ca twits twisting");
- }
-
+    inputStates.frontflipping &&
+    perso.isJumping &&
+    !inputStates.fronttwistingLeft &&
+    inputStates.left
+  ) {
+    inputStates.fronttwistingLeft = true;
+    perso.isFrontTwisting = true;
+    console.log("ca twits twisting");
+  }
 }
 
 function handleKeyUp(event) {
@@ -354,7 +351,7 @@ function startTimer() {
     if (timerSeconds <= 10) {
       timerDisplay.style.fontSize = "40px";
       timerDisplay.style.textShadow =
-          "1px 1px 1px #ff0000, 0.5px 0.5px 1px #cc0000, 1px 0.5px 1px #ff0000, 0.75px 0.75px 1px #cc0000, 1.25px 0.75px 1px #ff0000, 1px 1px 1px #cc0000, 1.5px 1px 1px #ff0000, 1.25px 1.25px 1px #cc0000, 1.75px 1.25px 1px #ff0000, 1.5px 1.5px 1px #cc0000, 2px 1.5px 1px #ff0000, 1.75px 1.75px 1px #cc0000, 2.25px 1.75px 1px #ff0000";
+        "1px 1px 1px #ff0000, 0.5px 0.5px 1px #cc0000, 1px 0.5px 1px #ff0000, 0.75px 0.75px 1px #cc0000, 1.25px 0.75px 1px #ff0000, 1px 1px 1px #cc0000, 1.5px 1px 1px #ff0000, 1.25px 1.25px 1px #cc0000, 1.75px 1.25px 1px #ff0000, 1.5px 1.5px 1px #cc0000, 2px 1.5px 1px #ff0000, 1.75px 1.75px 1px #cc0000, 2.25px 1.75px 1px #ff0000";
     }
     if (timerSeconds === 0) {
       clearInterval(timerInterval);
@@ -400,7 +397,7 @@ function endGame() {
     confetti({
       particleCount: 200,
       spread: 70,
-      origin: { y: 0.6 }
+      origin: { y: 0.6 },
     });
 
     setTimeout(() => {
@@ -459,8 +456,10 @@ function endGame() {
 
 function restartGame() {
   // Clear dynamic game elements
-  const elementsToRemove = document.querySelectorAll("#chargingBar, .timer, #endMessage, #instructions, #leaderboard, #restartButton, #quitButton");
-  elementsToRemove.forEach(element => element.remove());
+  const elementsToRemove = document.querySelectorAll(
+    "#chargingBar, .timer, #endMessage, #instructions, #leaderboard, #restartButton, #quitButton"
+  );
+  elementsToRemove.forEach((element) => element.remove());
 
   // Reset game variables
   inputStates = {};
@@ -469,7 +468,7 @@ function restartGame() {
   timerRunning = false;
 
   // Reset score and timer
-  timerSeconds = INITIAL_TIMER_SECONDS;  // Reset timer to initial value
+  timerSeconds = INITIAL_TIMER_SECONDS; // Reset timer to initial value
   if (perso) {
     perso.reset();
     inputStates = {}; // Reset input states
@@ -480,12 +479,14 @@ function restartGame() {
   }
   score.removeScoreDisplays(); // Ensure score displays are removed
   // Restart the game without displaying instructions
-  displayCharacterSelection(startGame);  // Display character selection to start the game
+  displayCharacterSelection(startGame); // Display character selection to start the game
 
   console.log("Timer restarted", timerInterval);
 }
 
 function clearDynamicElements() {
-  const elementsToRemove = document.querySelectorAll("#chargingBar, .timer, #endMessage, #instructions, #leaderboard, #scoreStreak, #currentScore");
-  elementsToRemove.forEach(element => element.remove());
+  const elementsToRemove = document.querySelectorAll(
+    "#chargingBar, .timer, #endMessage, #instructions, #leaderboard, #scoreStreak, #currentScore"
+  );
+  elementsToRemove.forEach((element) => element.remove());
 }
