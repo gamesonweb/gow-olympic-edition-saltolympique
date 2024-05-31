@@ -168,6 +168,15 @@ export class Personnage {
         if (Math.abs(this.rotationX) >= 2 * Math.PI) {
           this.fullTurnX();
         }}
+        if(inputStates.fronttwistingRigth){
+          this.rotationX -= 0.1;
+          this.rotationY += 0.1;
+          this.character.rotate(BABYLON.Axis.X, -0.1, BABYLON.Space.LOCAL);
+          this.character.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
+          if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI) {
+            this.fullTurnXandY();
+          }
+        }
         if(inputStates.fronttwistingLeft){
           console.log("FONTFing");
           this.rotationX -= 0.1;
@@ -178,15 +187,7 @@ export class Personnage {
             this.fullTurnXandY();
           }
         }
-      if(inputStates.fronttwistingRight){
-          this.rotationX -= 0.1;
-          this.rotationY += 0.1;
-          this.character.rotate(BABYLON.Axis.X, -0.1, BABYLON.Space.LOCAL);
-          this.character.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
-          if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI) {
-            this.fullTurnXandY();
-          }
-        }
+
 
       
   }
