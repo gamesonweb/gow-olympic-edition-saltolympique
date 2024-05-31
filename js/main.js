@@ -144,6 +144,8 @@ function startGame(characterFile) {
   score = new Score();
   scoreManager = new ScoreManager();
   scoreManager.displayLeaderboard(); // Display the leaderboard at the start of the game
+  canvas.width = window.innerWidth - 10;
+  canvas.height = window.innerHeight - 10;
 
   perso = new Personnage(scene, score, characterFile);
   perso.createCharacter((loadedCharacter) => {
@@ -169,7 +171,8 @@ function startGame(characterFile) {
   window.addEventListener("keyup", handleKeyUp);
 
   window.addEventListener("resize", () => {
-    engine.resize();
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   });
 
   modifySettings(inputStates);
@@ -197,6 +200,10 @@ function handleKeyDown(event) {
     inputStates.flipping = true;
     perso.isFlipping = true;
   }
+  if (event.code === "ArrowDown" && perso.isJumping && !inputStates.flipping) {
+    inputStates.frontflipping = true;
+    perso.isFrontFlipping = true;
+  }
   if (
     inputStates.flipping &&
     perso.isJumping &&
@@ -218,6 +225,27 @@ function handleKeyDown(event) {
     perso.isTwisting = true;
     console.log("ca twits twisting");
   }
+  if (
+    inputStates.frontflipping &&
+    perso.isJumping &&
+    !inputStates.fronttwistingRigth &&
+    inputStates.right
+  ) {
+    inputStates.fronttwistingRigth = true;
+    perso.isTwisting = true;
+
+    console.log("twistppipipipiing");
+  }
+  if (
+    inputStates.frontflipping &&
+    perso.isJumping &&
+    !inputStates.fronttwistingLeft &&
+    inputStates.left
+  ) {
+    inputStates.fronttwistingLeft = true;
+    perso.isFrontTwisting = true;
+    console.log("ca twits twisting");
+  }
 }
 
 function handleKeyUp(event) {
@@ -234,10 +262,16 @@ function handleKeyUp(event) {
   if (event.code === "ArrowLeft") {
     inputStates.left = false;
     inputStates.twistingLeft = false;
+    inputStates.fronttwistingLeft = false;
+    inputStates.fronttwistingRigth = false;
+    perso.isFrontTwisting = false;
   }
   if (event.code === "ArrowRight") {
     inputStates.right = false;
     inputStates.twistingRigth = false;
+    inputStates.fronttwistingLeft = false;
+    inputStates.fronttwistingRigth = false;
+    perso.isFrontTwisting = false;
   }
   if (event.code === "ArrowUp") {
     inputStates.flipping = false;
@@ -245,6 +279,13 @@ function handleKeyUp(event) {
     inputStates.twistingLeft = false;
     inputStates.twistingRigth = false;
     perso.isTwisting = false;
+  }
+  if (event.code === "ArrowDown") {
+    inputStates.frontflipping = false;
+    perso.isFrontFlipping = false;
+    inputStates.fronttwistingLeft = false;
+    inputStates.fronttwistingRigth = false;
+    perso.isFrontTwisting = false;
   }
 }
 
@@ -371,7 +412,7 @@ function endGame() {
   endMessage.style.top = "35%";
   endMessage.style.left = "50%";
   endMessage.style.transform = "translate(-50%, -50%)";
-  endMessage.style.color = "white";
+  endMessage.style.color = "gold";
   endMessage.style.fontSize = "24px";
   endMessage.style.fontWeight = "bold";
   endMessage.style.textAlign = "center";
