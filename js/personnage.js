@@ -18,6 +18,9 @@ export class Personnage {
     this.landAnim = null; // Add landAnim to store the land animation
     this.idleAnim = null; // Add idleAnim to store the idle animation
     this.poseAnim = null; // Add poseAnim to store the pose animation
+    this.landAnimPlaying = false;
+    this.jumpAnimPlaying = false;
+    this.flipAnimPlaying = false;
   }
 
   createCharacter(callback) {
@@ -25,7 +28,7 @@ export class Personnage {
       if (olympianMesh) {
         this.character = olympianMesh;
         this.character.position = new BABYLON.Vector3(0, 0, 0);
-        this.character.rotation = new BABYLON.Vector3(0, 0, 0);
+        this.character.rotation = new BABYLON.Vector3(0, 115, 0);
         this.character.scaling = new BABYLON.Vector3(700, 700, 700);
         this.jumpAnim = animations.jumpAnim; // Assign jumpAnim from the loaded animations
         this.flipAnim = animations.flipAnim; // Assign flipAnim from the loaded animations
@@ -48,11 +51,8 @@ export class Personnage {
       console.error("Character mesh not loaded.");
       return;
     }
-    if (this.poseAnim) {
-      this.poseAnim.start(true, 1.0, this.poseAnim.from, this.poseAnim.to, false);
-    }
-    let jumpDuration = height * 2; // Augmenter la durée du saut en fonction de la hauteur
 
+    let jumpDuration = height * 2; // Augmenter la durée du saut en fonction de la hauteur
     let animation = new BABYLON.Animation(
         "jumpAnimation",
         "position.y",
@@ -60,7 +60,8 @@ export class Personnage {
         BABYLON.Animation.ANIMATIONTYPE_FLOAT,
         BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
     );
-
+    this.flipAnim.start(true, 1.0, this.flipAnim.from, this.flipAnim.to, false);
+    this.flipAnimPlaying = true;
     let keys = [];
     keys.push({ frame: 0, value: this.character.position.y });
     keys.push({ frame: jumpDuration *0.5, value: this.character.position.y + height });
@@ -68,9 +69,6 @@ export class Personnage {
 
     animation.setKeys(keys);
     this.character.animations.push(animation);
-    if (this.jumpAnim) {
-      this.jumpAnim.start(true, 1.0, this.jumpAnim.from, this.jumpAnim.to, false);
-    }
     this.scene.beginAnimation(this.character, 0, jumpDuration, false, 1, () => {
       // Animation finished callback
       this.characterLand(); // Check if the character landed
@@ -78,9 +76,8 @@ export class Personnage {
       this.characterReset(); // Reset the character position
       this.score.endofJump(); // End of jump
     });
-    if (this.landAnim) {
-      this.landAnim.start(true, 1.0, this.landAnim.from, this.landAnim.to, false);
-    }
+
+  
 
 
   }
@@ -99,9 +96,15 @@ export class Personnage {
     }
 
     // check if the character is standing
-    if (this.rotationX > -0.7 && this.rotationX < 0.7) {
+    if (this.rotationX > -0.6 && this.rotationX < 0.6) {
       console.log("Character landed successfully");
       this.score.increaseScore(50);
+      this.score.showLandMessage("Bien atteri !");
+      this.landAnimPlaying = true;
+      this.landAnim.start(false, 1.0, this.landAnim.from, this.landAnim.to, false, () => {
+        // Callback une fois que l'animation est terminée
+        this.landAnimPlaying = false;} );   
+
       return true;
     } else {
       // JUMP FAILED
@@ -123,9 +126,9 @@ export class Personnage {
     this.isJumping = false; // Reset jumping state
     this.rotationX = 0;
     this.rotationY = 0;
-    if (this.idleAnim) {
+  
       this.idleAnim.start(true, 1.0, this.idleAnim.from, this.idleAnim.to, false);
-    }
+    
   }
 
   characterFlip() {
@@ -226,10 +229,11 @@ export class Personnage {
       } else if (!inputStates.flipping && this.isFlipping) {
         this.isFlipping = false;
       }
-    }else {
+    }
+    else {
       // Play the idle animation if no inputs and not jumping
       if (!inputStates.left && !inputStates.right && !inputStates.flipping && !inputStates.twistingLeft && !inputStates.twistingRight && !inputStates.frontflipping && !inputStates.fronttwistingRight && !inputStates.fronttwistingLeft) {
-        if (this.idleAnim && !this.idleAnim.isPlaying) {
+        if (this.idleAnim) {
           this.idleAnim.start(true, 1.0, this.idleAnim.from, this.idleAnim.to, false);
         }}}
   }

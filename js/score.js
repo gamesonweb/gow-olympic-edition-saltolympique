@@ -147,4 +147,29 @@ export class Score {
       }, 1000);
     }, 1000);
   }
+  showLandMessage(text) {
+    let landMessage = document.createElement("div");
+    landMessage.className = "landMessage";
+    landMessage.innerHTML = text;
+    landMessage.style.position = "absolute";
+    landMessage.style.color = "lightgreen";
+    landMessage.style.fontSize = "24px";
+    landMessage.style.fontWeight = "bold";
+    landMessage.style.textShadow = "2px 2px 4px #000000";
+    landMessage.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    landMessage.style.padding = "5px";
+    landMessage.style.borderRadius = "5px";
+    landMessage.style.left = "80%";
+    landMessage.style.top = "50%";
+    landMessage.style.transform = "translate(-50%, -50%)";
+    document.body.appendChild(landMessage);
+  
+    setTimeout(() => {
+      landMessage.style.opacity = 0;
+      setTimeout(() => {
+        document.body.removeChild(landMessage);
+      }, 1000);
+    }, 1000);
+  }
+  
 }
