@@ -14,6 +14,8 @@ export class ScoreManager {
                 body: JSON.stringify({ name, score })
             });
 
+            // score updated
+
 
 
             const newScore = await response.json();
