@@ -13,8 +13,10 @@ export class Personnage {
     this.score = score;
     this.rotationX = 0;
     this.rotationY = 0;
-    this.flipAnim = null; // Add flipAnim to store the flip animation
-    this.jumpAnim = null; // Add jumpAnim to store the jump animation
+    this.flipAnim = null;
+    this.jumpAnim = null;
+    this.landAnim = null; // Add landAnim to store the land animation
+    this.idleAnim = null; // Add idleAnim to store the idle animation
     this.poseAnim = null; // Add poseAnim to store the pose animation
   }
 
@@ -28,6 +30,8 @@ export class Personnage {
         this.jumpAnim = animations.jumpAnim; // Assign jumpAnim from the loaded animations
         this.flipAnim = animations.flipAnim; // Assign flipAnim from the loaded animations
         this.poseAnim = animations.poseAnim; // Assign poseAnim from the loaded animations
+        this.idleAnim = animations.idleAnim; // Assign idleAnim from the loaded animations
+        this.landAnim = animations.landAnim; // Assign landAnim from the loaded animations
         loadAnimations(this.scene);
         if (this.poseAnim) {
           this.poseAnim.start(true, 1.0, this.poseAnim.from, this.poseAnim.to, false);
@@ -64,6 +68,9 @@ export class Personnage {
 
     animation.setKeys(keys);
     this.character.animations.push(animation);
+    if (this.jumpAnim) {
+      this.jumpAnim.start(true, 1.0, this.jumpAnim.from, this.jumpAnim.to, false);
+    }
     this.scene.beginAnimation(this.character, 0, jumpDuration, false, 1, () => {
       // Animation finished callback
       this.characterLand(); // Check if the character landed
@@ -71,9 +78,11 @@ export class Personnage {
       this.characterReset(); // Reset the character position
       this.score.endofJump(); // End of jump
     });
-    if (this.jumpAnim) {
-      this.jumpAnim.start(true, 1.0, this.jumpAnim.from, this.jumpAnim.to, false);
+    if (this.landAnim) {
+      this.landAnim.start(true, 1.0, this.landAnim.from, this.landAnim.to, false);
     }
+
+
   }
 
   calculateJumpHeight(chargeAmount) {
@@ -114,6 +123,9 @@ export class Personnage {
     this.isJumping = false; // Reset jumping state
     this.rotationX = 0;
     this.rotationY = 0;
+    if (this.idleAnim) {
+      this.idleAnim.start(true, 1.0, this.idleAnim.from, this.idleAnim.to, false);
+    }
   }
 
   characterFlip() {
@@ -214,7 +226,12 @@ export class Personnage {
       } else if (!inputStates.flipping && this.isFlipping) {
         this.isFlipping = false;
       }
-    }
+    }else {
+      // Play the idle animation if no inputs and not jumping
+      if (!inputStates.left && !inputStates.right && !inputStates.flipping && !inputStates.twistingLeft && !inputStates.twistingRight && !inputStates.frontflipping && !inputStates.fronttwistingRight && !inputStates.fronttwistingLeft) {
+        if (this.idleAnim && !this.idleAnim.isPlaying) {
+          this.idleAnim.start(true, 1.0, this.idleAnim.from, this.idleAnim.to, false);
+        }}}
   }
 
   fullTurnY() {
