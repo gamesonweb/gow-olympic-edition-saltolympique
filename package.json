@@ -1,26 +1,19 @@
 {
-  "name": "saltolympique",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "http-server . -p 8000"
+    "start": "node server.js"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babylonjs/core": "^7.8.2",
-    "@babylonjs/gui": "^7.6.1",
-    "@babylonjs/loaders": "^7.8.2",
-    "babylonjs": "^7.8.2",
-    "babylonjs-loaders": "^7.8.2",
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "mongoose": "^8.4.0"
-  },
-  "devDependencies": {
-    "http-server": "^14.1.1"
+    "express": "^4.17.1",
+    "mongoose": "^5.13.7",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5"
   }
 }
