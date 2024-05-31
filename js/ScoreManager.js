@@ -1,13 +1,37 @@
 export class ScoreManager {
     constructor() {
-        this.scores = this.loadScores() || [];
+        this.scores = [];
+        this.loadScores();
     }
 
-    addScore(name, score) {
-        this.scores.push({ name, score });
-        this.scores.sort((a, b) => b.score - a.score); // Sort scores in descending order
-        this.scores = this.scores.slice(0, 5); // Keep only top 5 scores
-        this.saveScores();
+    async addScore(name, score) {
+        try {
+            const response = await fetch('http://localhost:3000/scores', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, score })
+            });
+
+            const newScore = await response.json();
+            this.scores.push(newScore);
+            this.scores.sort((a, b) => b.score - a.score);
+            this.scores = this.scores.slice(0, 5);
+            this.displayLeaderboard();
+        } catch (error) {
+            console.error('Error adding score:', error);
+        }
+    }
+
+    async loadScores() {
+        try {
+            const response = await fetch('http://localhost:3000/scores');
+            this.scores = await response.json();
+            this.displayLeaderboard();
+        } catch (error) {
+            console.error('Error loading scores:', error);
+        }
     }
 
     getBestScore() {
@@ -27,7 +51,7 @@ export class ScoreManager {
         leaderboard.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
 
         const title = document.createElement("h2");
-        title.innerText = "Classement des joeurs";
+        title.innerText = "Classement des joueurs";
         leaderboard.appendChild(title);
 
         const list = document.createElement("ol");
@@ -42,13 +66,5 @@ export class ScoreManager {
         leaderboard.appendChild(list);
 
         document.body.appendChild(leaderboard);
-    }
-
-    saveScores() {
-        localStorage.setItem("scores", JSON.stringify(this.scores));
-    }
-
-    loadScores() {
-        return JSON.parse(localStorage.getItem("scores"));
     }
 }
