@@ -14,6 +14,8 @@ export class ScoreManager {
                 body: JSON.stringify({ name, score })
             });
 
+
+
             const newScore = await response.json();
             this.scores.push(newScore);
             this.scores.sort((a, b) => b.score - a.score);
