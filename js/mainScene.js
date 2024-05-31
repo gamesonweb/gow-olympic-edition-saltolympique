@@ -49,6 +49,15 @@ export function createScene(engine, canvas) {
     }
   );
 
+  // Create and play background music
+  let backgroundMusic = new BABYLON.Sound(
+    "backgroundMusic",
+    "../assets/musique/musique.mp3", // Path to your music file
+    scene,
+    null,
+    { loop: true, autoplay: true }
+  );
+
   return scene;
 }
 
