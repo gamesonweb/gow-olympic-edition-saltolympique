@@ -40,27 +40,37 @@ export function createScene(engine, canvas) {
   return scene;
 }
 
-export function createCamera(scene, canvas) {
-  // Create an arc rotate camera
-  let camera = new BABYLON.ArcRotateCamera(
-      "ArcRotateCamera",
-      BABYLON.Tools.ToRadians(50),
-      BABYLON.Tools.ToRadians(50),
-      150,
-      new BABYLON.Vector3(0, 0, 0),
-      scene
-  );
+export function createCamera(scene, canvas, target) {
+ // Create a follow camera
+ let camera = new BABYLON.FollowCamera(
+  "FollowCam",
+  new BABYLON.Vector3(0, 100, 100),
+  scene
+);
 
-  // Set the camera properties to disable zoom and rotation controls
-  camera.lowerRadiusLimit = camera.upperRadiusLimit = camera.radius;
-  camera.lowerAlphaLimit = camera.upperAlphaLimit = camera.alpha;
-  camera.lowerBetaLimit = camera.upperBetaLimit = camera.beta;
+// The goal distance of camera from target
+camera.radius = 40;
+// The goal height of camera above local origin (centre) of target
+camera.heightOffset = 40;
+// The goal rotation of camera around local origin (centre) of target in x y plane
+camera.rotationOffset = 100;
+// Acceleration of camera in moving from current to goal position
+camera.cameraAcceleration = 0.05;
+// The speed at which acceleration is halted
+camera.maxCameraSpeed = 20;
 
-  // This attaches the camera to the canvas
-  camera.attachControl(canvas, true);
+// This attaches the camera to the canvas
+camera.attachControl(canvas, true);
 
-  return camera;
-}
+camera.lockedTarget = target;
+ scene.onBeforeRenderObservable.add(() => {
+  camera.position.x = camera.lockedTarget.position.x;
+  camera.position.z = camera.lockedTarget.position.z - 40;
+});
+return camera;  }
+  
+
+
 
 export function modifySettings(inputStates) {
   // Define any settings modification logic here

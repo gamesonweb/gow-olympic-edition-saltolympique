@@ -7,30 +7,30 @@ console.log(path);
 
 export function loadolympianModel(scene, callback) {
   BABYLON.SceneLoader.ImportMesh(
-      "",
-      "assets/models/",
-      "Olympian.glb",
-      scene,
-      (meshes, particleSystems, skeletons, animationGroups) => {
-        if (meshes.length > 0) {
-          let olympianMesh = meshes[0];
+    "",
+    "assets/models/",
+    "Olympian.glb",
+    scene,
+    (meshes, particleSystems, skeletons, animationGroups) => {
+      if (meshes.length > 0) {
+        let olympianMesh = meshes[0];
 
-          // Set the skeleton and animations
-          let flipAnim = animationGroups.find((anim) => anim.name === "flip");
-          let poseAnim = animationGroups.find((anim) => anim.name === "Pose");
-          let jumpAnim = animationGroups.find((anim) => anim.name === "jump");
+        // Set the skeleton and animations
+        let flipAnim = animationGroups.find((anim) => anim.name === "flip");
+        let poseAnim = animationGroups.find((anim) => anim.name === "Pose");
+        let jumpAnim = animationGroups.find((anim) => anim.name === "jump");
+        let idleAnim = animationGroups.find((anim) => anim.name === "idle");
 
-
-          console.log("olympian model loaded successfully.");
-          callback(olympianMesh, { flipAnim }); // Pass flipAnim in the callback
-        } else {
-          console.error("olympian model not loaded. No meshes found.");
-        }
-      },
-      null,
-      (scene, message, exception) => {
-        console.error(`Error loading olympian model: ${message}`, exception);
+        console.log("olympian model loaded successfully.");
+        callback(olympianMesh, { flipAnim, poseAnim, jumpAnim, idleAnim }); // Pass flipAnim in the callback
+      } else {
+        console.error("olympian model not loaded. No meshes found.");
       }
+    },
+    null,
+    (scene, message, exception) => {
+      console.error(`Error loading olympian model: ${message}`, exception);
+    }
   );
 }
 

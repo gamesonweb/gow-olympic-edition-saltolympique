@@ -2,7 +2,7 @@ import { createScene, modifySettings, createCamera } from "./mainScene.js";
 import { Personnage } from "./personnage.js";
 import { Score } from "./score.js";
 import { displayInstructionsHTML } from "./instructions.js";
-import { ScoreManager } from "./scoreManager.js";
+import { ScoreManager } from "./ScoreManager.js";
 import { displayCharacterSelection } from "./characterSelection.js";
 
 let engine;
@@ -196,9 +196,30 @@ function handleKeyDown(event) {
   if (event.code === "ArrowRight") {
     inputStates.right = true;
   }
-  if (event.code === "KeyF" && perso.isJumping && !inputStates.flipping) {
+  if (event.code === "ArrowUp" && perso.isJumping && !inputStates.flipping) {
     inputStates.flipping = true;
     perso.isFlipping = true;
+  }
+  if (
+    inputStates.flipping &&
+    perso.isJumping &&
+    !inputStates.twistingRigth &&
+    inputStates.right
+  ) {
+    inputStates.twistingRigth = true;
+    perso.isTwisting = true;
+
+    console.log("twistppipipipiing");
+  }
+  if (
+    inputStates.flipping &&
+    perso.isJumping &&
+    !inputStates.twistingLeft &&
+    inputStates.left
+  ) {
+    inputStates.twistingLeft = true;
+    perso.isTwisting = true;
+    console.log("ca twits twisting");
   }
 }
 
@@ -215,13 +236,18 @@ function handleKeyUp(event) {
 
   if (event.code === "ArrowLeft") {
     inputStates.left = false;
+    inputStates.twistingLeft = false;
   }
   if (event.code === "ArrowRight") {
     inputStates.right = false;
+    inputStates.twistingRigth = false;
   }
-  if (event.code === "KeyF") {
+  if (event.code === "ArrowUp") {
     inputStates.flipping = false;
     perso.isFlipping = false;
+    inputStates.twistingLeft = false;
+    inputStates.twistingRigth = false;
+    perso.isTwisting = false;
   }
 }
 
@@ -277,7 +303,7 @@ function startTimer() {
   timerDisplay.style.position = "absolute";
   timerDisplay.style.bottom = "10px";
   timerDisplay.style.left = "10px";
-  timerDisplay.style.color = "white";
+  timerDisplay.style.color = "gold";
   timerDisplay.style.fontSize = "20px";
   document.body.appendChild(timerDisplay);
 
