@@ -187,6 +187,8 @@ function handleKeyDown(event) {
       chargingBar.style.width = "0";
       chargingBar.dataset.charging = "true";
       startTimer();
+
+
     }
   }
 
