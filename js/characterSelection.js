@@ -1,3 +1,5 @@
+import { loadolympianModel } from "./Olympian.js";
+
 export function displayCharacterSelection(callback) {
   const characters = [{ name: "Olympien", file: "Olympian.glb" }];
 
@@ -44,33 +46,32 @@ function createPreview(canvas, modelFile) {
   const engine = new BABYLON.Engine(canvas, true);
   const scene = new BABYLON.Scene(engine);
   const camera = new BABYLON.ArcRotateCamera(
-    "Camera",
-    Math.PI / 2,
-    Math.PI / 2,
-    2,
-    BABYLON.Vector3.Zero(),
-    scene
+      "Camera",
+      Math.PI / 2,
+      Math.PI / 2.5,
+      1.8,
+      new BABYLON.Vector3(0, 1.2, -0.6),
+      scene
   );
-  camera.attachControl(canvas, true);
+  //camera.attachControl(canvas, true);
   const light = new BABYLON.HemisphericLight(
-    "light",
-    new BABYLON.Vector3(1, 1, 0),
-    scene
+      "light",
+      new BABYLON.Vector3(1, 1, 0),
+      scene
   );
 
-  BABYLON.SceneLoader.ImportMesh(
-    "",
-    "assets/models/",
-    modelFile,
-    scene,
-    (meshes) => {
-      if (meshes.length > 0) {
-        const model = meshes[0];
-        model.scaling = new BABYLON.Vector3(1, 1, 1);
-        model.position = new BABYLON.Vector3(0, 0, 0);
+  loadolympianModel(scene, (olympianMesh, animations) => {
+    if (olympianMesh) {
+      olympianMesh.scaling = new BABYLON.Vector3(40, 40, 40);
+      olympianMesh.position = new BABYLON.Vector3(0, 1, 0); // Lowered the position
+      olympianMesh.rotation = new BABYLON.Vector3(0, 0, 0); // Rotate to face front
+
+      const idleAnim = animations.idleAnim;
+      if (idleAnim) {
+        idleAnim.start(true, 1.0);
       }
     }
-  );
+  });
 
   engine.runRenderLoop(() => {
     scene.render();
