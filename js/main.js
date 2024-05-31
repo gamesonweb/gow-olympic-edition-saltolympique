@@ -187,6 +187,8 @@ function handleKeyDown(event) {
       chargingBar.style.width = "0";
       chargingBar.dataset.charging = "true";
       startTimer();
+
+
     }
   }
 
@@ -387,12 +389,6 @@ function endGame() {
     congratsMessage.id = "congratsMessage"; // Set the ID to easily remove it later
     document.body.appendChild(congratsMessage);
 
-    // Show the character in pose animation
-    if (perso && perso.poseAnim) {
-      perso.character.position = new BABYLON.Vector3(0, 1.51, 0); // Position character
-      perso.character.scaling = new BABYLON.Vector3(20, 20, 20);
-      playAnimation(perso.poseAnim); // Play pose animation
-    }
 
     confetti({
       particleCount: 200,
@@ -400,9 +396,7 @@ function endGame() {
       origin: { y: 0.6 },
     });
 
-    setTimeout(() => {
-      congratsMessage.remove();
-    }, 5000); // Remove the message after 5 seconds
+
   }
 
   // Afficher un message indiquant la fin du jeu et le score final

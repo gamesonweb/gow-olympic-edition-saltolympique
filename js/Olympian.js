@@ -64,6 +64,7 @@ export function playNextAnimation(isJumping) {
     default:
       break;
   }
+  
 
   currentAnimationIndex = (currentAnimationIndex + 1) % 3;
 }
