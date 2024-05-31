@@ -1,63 +1,67 @@
-// personnage.js
+import {
+  loadolympianModel,
+  loadAnimations,
+  playNextAnimation,
+} from "./Olympian.js";
 
 export class Personnage {
   constructor(scene, score) {
-    this.cube = null;
+    this.character = null;
     this.isJumping = false;
     this.isFlipping = false;
     this.scene = scene;
     this.score = score;
     this.rotationX = 0;
     this.rotationY = 0;
+    this.flipAnim = null; // Add flipAnim to store the flip animation
   }
 
-  createCharacter() {
-    // Create a cube
-    this.cube = BABYLON.MeshBuilder.CreateBox(
-      "cube",
-      { width: 1, height: 2, depth: 0.5 },
-      this.scene
-    );
-    this.cube.position.y = 1;
-
-    // Create a material for the cube
-    let material = new BABYLON.StandardMaterial("material", this.scene);
-    material.diffuseColor = new BABYLON.Color3(0.5, 0.5, 1);
-    this.cube.material = material;
-  }
-
-  cubeJump(height) {
-    let jumpDuration = height * 2; // Augmenter la durée du saut en fonction de la hauteur
-    
-    let animation = new BABYLON.Animation(
-      "jumpAnimation",
-      "position.y",
-      30,
-      BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-    );
-  
-    let keys = [];
-    keys.push({ frame: 0, value: this.cube.position.y });
-    keys.push({ frame: jumpDuration *0.5, value: this.cube.position.y + height });
-    keys.push({ frame: jumpDuration, value: this.cube.position.y });
-  
-    animation.setKeys(keys);
-    this.cube.animations.push(animation);
-    this.scene.beginAnimation(this.cube, 0, jumpDuration, false, 1, () => {
-      // Animation finished callback
-      this.cubeLand(); // Check if the cube landed
-      this.isJumping = false; // Reset jumping state
-      if (this.isFlipping) {
-        // this.scene.stopAnimation(this.cube); // Stop the flip animation
+  createCharacter(callback) {
+    loadolympianModel(this.scene, (olympianMesh, animations) => {
+      if (olympianMesh) {
+        this.character = olympianMesh;
+        this.character.position = new BABYLON.Vector3(0, 0, 0);
+        this.character.scaling = new BABYLON.Vector3(700, 700, 700);
+        this.flipAnim = animations.flipAnim; // Assign flipAnim from the loaded animations
+        loadAnimations(this.scene);
+        if (callback) callback(this.character);
+      } else {
+        console.error("Character mesh not found.");
       }
+    });
+  }
+
+  characterJump(height) {
+    if (!this.character) {
+      console.error("Character mesh not loaded.");
+      return;
+    }
+
+    let animation = new BABYLON.Animation(
+        "jumpAnimation",
+        "position.y",
+        30,
+        BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+    );
+
+    let keys = [];
+    keys.push({ frame: 0, value: this.character.position.y });
+    keys.push({ frame: 20, value: this.character.position.y + height });
+    keys.push({ frame: 40, value: this.character.position.y });
+
+    animation.setKeys(keys);
+    this.character.animations.push(animation);
+    this.scene.beginAnimation(this.character, 0, 40, false, 1, () => {
+      // Animation finished callback
+      this.characterLand(); // Check if the character landed
+      this.isJumping = false; // Reset jumping state
       chargingBar.style.display = "none"; // Hide the charging bar
       chargingBar.dataset.charging = "false"; // Reset data attribute
-      this.cubeReset(); // Reset the cube position
+      this.characterReset(); // Reset the character position
       this.score.endofJump(); // End of jump
     });
   }
-  
 
   calculateJumpHeight(chargeAmount) {
     let jumpHeight = chargeAmount / 10;
@@ -66,127 +70,102 @@ export class Personnage {
     return jumpHeight;
   }
 
-  cubeLand() {
-    // check if the cube is standing
+  characterLand() {
+    if (!this.character) {
+      console.error("Character mesh not loaded.");
+      return false;
+    }
+
+    // check if the character is standing
     if (this.rotationX > -0.8 && this.rotationX < 0.8) {
-      console.log("Cube landed successfully");
-      this.score.increaseScore(50);
+      console.log("Character landed successfully");
+      this.score.increaseScore(300);
       return true;
     } else {
       // JUMP FAILED
-      console.log("Cube landed unsuccessfully");
+      console.log("Character landed unsuccessfully");
       this.score.resetScore();
       return false;
     }
   }
 
-  cubeReset() {
-    this.cube.position = new BABYLON.Vector3(0, 1, 0);
-    this.cube.rotation = new BABYLON.Vector3(0, 0, 0);
+  characterReset() {
+    if (!this.character) {
+      console.error("Character mesh not loaded.");
+      return;
+    }
+
+    this.character.position = new BABYLON.Vector3(0, 0, 0);
+    this.character.rotation = new BABYLON.Vector3(0, 0, 0);
     this.isFlipping = false; // Reset flipping state
     this.isJumping = false; // Reset jumping state
-    this.twisting = false;
     this.rotationX = 0;
     this.rotationY = 0;
   }
 
-  cubeFlip() {
-    let flipAnimation = new BABYLON.Animation(
-      "flipAnimation",
-      "rotation.x",
-      60,
-      BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    );
+  characterFlip() {
+    if (!this.character) {
+      console.error("Character mesh not loaded.");
+      return;
+    }
 
-    let keyFrames = [];
-    keyFrames.push({ frame: 0, value: this.cube.rotation.y });
-    keyFrames.push({ frame: 120, value: this.cube.rotation.y + 2 * Math.PI });
-
-    flipAnimation.setKeys(keyFrames);
-
-    this.scene.beginDirectAnimation(
-      this.cube,
-      [flipAnimation],
-      0,
-      120,
-      false,
-      1,
-      () => {
-        this.score.increaseScore(100); // Increase score by 100 points
-        this.score.updateCurrentScore(); // Update current score display
-
-        this.isFlipping = false; // The flip is over, allow another flip
-
-        // Calculate screen position for the score text
-        let screenPosition = BABYLON.Vector3.Project(
-          this.cube.position,
-          BABYLON.Matrix.Identity(),
-          this.scene.getTransformMatrix(),
-          this.scene.activeCamera.viewport.toGlobal(
-            this.scene.getEngine().getRenderWidth(),
-            this.scene.getEngine().getRenderHeight()
-          )
-        );
-      }
-    );
+    if (this.flipAnim) {
+      this.flipAnim.start(true, 1.0, this.flipAnim.from, this.flipAnim.to, false);
+    } else {
+      console.error("Flip animation not found.");
+    }
   }
 
   handleRotation(inputStates) {
+    if (!this.character) {
+      console.error("Character mesh not loaded.");
+      return;
+    }
+
     if (inputStates.left) {
-      this.cube.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
-      this.rotationY -= 0.1;
+      this.character.rotate(BABYLON.Axis.Y, -0.05, BABYLON.Space.LOCAL);
+      this.rotationY -= 0.05;
       if (Math.abs(this.rotationY) >= 2 * Math.PI) {
         this.fullTurnY();
       }
     }
     if (inputStates.right) {
-      this.cube.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
-      this.rotationY += 0.1;
+      this.character.rotate(BABYLON.Axis.Y, 0.05, BABYLON.Space.LOCAL);
+      this.rotationY += 0.05;
       if (Math.abs(this.rotationY) >= 2 * Math.PI) {
         this.fullTurnY();
       }
     }
     if (inputStates.flipping) {
       this.rotationX += 0.1;
-      this.cube.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
+      this.character.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
       if (Math.abs(this.rotationX) >= 2 * Math.PI) {
         this.fullTurnX();
       }
     }
-    if(inputStates.twistingLeft) {
-      console.log("TwistiJOEFEng");
-      this.rotationX += 0.1;
-      this.rotationY -= 0.1;
-      this.cube.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
-      this.cube.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
-      if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI){
-        this.fullTurnXandY();
-      }
-    }
-    if (inputStates.twistingRigth) {
-      console.log("TwistSQFNNSFing");
-      this.rotationX += 0.1;
-      this.rotationY += 0.1;
-      this.cube.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
-      this.cube.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
-      if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI) {
-        this.fullTurnXandY();
-      }
-
-    }
   }
-  
+
   update(inputStates) {
     if (this.isJumping) {
       this.handleRotation(inputStates);
+      if (inputStates.flipping && !this.isFlipping) {
+        this.isFlipping = true;
+        this.characterFlip();
+      } else if (!inputStates.flipping && this.isFlipping) {
+        this.isFlipping = false;
+      }
     }
   }
 
   fullTurnY() {
+    if (!this.character) {
+      console.error("Character mesh not loaded.");
+      return;
+    }
+
     console.log("Full turn");
     // Add 100 to the score
-    this.score.increaseScore(150);
+    this.score.increaseScore(100);
     // Update the current score display
     this.score.updateCurrentScore();
     // Reset the rotation
@@ -194,6 +173,11 @@ export class Personnage {
   }
 
   fullTurnX() {
+    if (!this.character) {
+      console.error("Character mesh not loaded.");
+      return;
+    }
+
     console.log("Full turn");
     // Add 200 to the score
     this.score.increaseScore(200);
@@ -201,16 +185,5 @@ export class Personnage {
     this.score.updateCurrentScore();
     // Reset the rotation
     this.rotationX = 0;
-  }
-
-  fullTurnXandY() {
-    console.log("TWISTANCE");
-    // Add 300 to the score
-    this.score.increaseScore(500);
-    // Update the current score display
-    this.score.updateCurrentScore();
-    // Reset the rotation
-    this.rotationX = 0;
-    this.rotationY = 0;
   }
 }

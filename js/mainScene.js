@@ -1,61 +1,64 @@
 export function createScene(engine, canvas) {
   let scene = new BABYLON.Scene(engine);
 
-  // Set background color
-  scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
+  // Set background color to a clear sky
+  scene.clearColor = new BABYLON.Color4(0.53, 0.81, 0.98, 1);
 
   // Create lights
-  let light = new BABYLON.HemisphericLight(
-    "light",
-    new BABYLON.Vector3(0, 1, 0),
-    scene
-  );
-  // Create another light
-  let light2 = new BABYLON.PointLight(
-    "pointLight",
-    new BABYLON.Vector3(1, 10, -1),
-    scene
-  );
-  light2.intensity = 0.5;
-  light.intensity = 1;
+  let hemisphericLight = new BABYLON.HemisphericLight("hemisphericLight", new BABYLON.Vector3(0, 1, 0), scene);
+  hemisphericLight.intensity = 0.8;
 
-  // Add ground
-  let ground = BABYLON.MeshBuilder.CreateGround(
-    "ground",
-    { width: 20, height: 20 },
-    scene
+  let directionalLight = new BABYLON.DirectionalLight("directionalLight", new BABYLON.Vector3(0, -1, 0), scene);
+  directionalLight.position = new BABYLON.Vector3(0, 50, 0);
+  directionalLight.intensity = 0.8;
+
+  let pointLight = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 20, -10), scene);
+  pointLight.intensity = 0.6;
+
+  // Load arena model
+  BABYLON.SceneLoader.ImportMesh(
+      "",
+      "assets/models/", // Path to the model
+      "Arene.glb",
+      scene,
+      (meshes) => {
+        if (meshes.length > 0) {
+          let arenaMesh = meshes[0];
+          arenaMesh.position = new BABYLON.Vector3(0, 0, 0);
+          arenaMesh.scaling = new BABYLON.Vector3(5, 5, 5);
+          console.log("Arena model loaded successfully.");
+        } else {
+          console.error("Error: Arena model not loaded. No meshes found.");
+        }
+      },
+      null,
+      (scene, message, exception) => {
+        console.error(`Error loading arena model: ${message}`, exception);
+      }
   );
 
   return scene;
 }
 
-export function createCamera(scene, canvas, target) {
-  // Create a follow camera
-  let camera = new BABYLON.FollowCamera(
-    "FollowCam",
-    new BABYLON.Vector3(0, 100, -100),
-    scene
+export function createCamera(scene, canvas) {
+  // Create an arc rotate camera
+  let camera = new BABYLON.ArcRotateCamera(
+      "ArcRotateCamera",
+      BABYLON.Tools.ToRadians(50),
+      BABYLON.Tools.ToRadians(50),
+      150,
+      new BABYLON.Vector3(0, 0, 0),
+      scene
   );
 
-  // The goal distance of camera from target
-  camera.radius = 40;
-  // The goal height of camera above local origin (centre) of target
-  camera.heightOffset = 50;
-  // The goal rotation of camera around local origin (centre) of target in x y plane
-  camera.rotationOffset = 0;
-  // Acceleration of camera in moving from current to goal position
-  camera.cameraAcceleration = 0.05;
-  // The speed at which acceleration is halted
-  camera.maxCameraSpeed = 20;
+  // Set the camera properties to disable zoom and rotation controls
+  camera.lowerRadiusLimit = camera.upperRadiusLimit = camera.radius;
+  camera.lowerAlphaLimit = camera.upperAlphaLimit = camera.alpha;
+  camera.lowerBetaLimit = camera.upperBetaLimit = camera.beta;
 
   // This attaches the camera to the canvas
   camera.attachControl(canvas, true);
 
-  camera.lockedTarget = target;
-   scene.onBeforeRenderObservable.add(() => {
-    camera.position.x = camera.lockedTarget.position.x;
-    camera.position.z = camera.lockedTarget.position.z - 50;
-  });
   return camera;
 }
 

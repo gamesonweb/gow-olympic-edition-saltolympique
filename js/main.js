@@ -2,6 +2,8 @@ import { createScene, modifySettings, createCamera } from "./mainScene.js";
 import { Personnage } from "./personnage.js";
 import { Score } from "./score.js";
 import { displayInstructionsHTML } from "./instructions.js";
+import { ScoreManager } from "./scoreManager.js";
+import { displayCharacterSelection } from "./characterSelection.js";
 
 let engine;
 let canvas;
@@ -15,49 +17,159 @@ let chargeDirection = 1;
 
 let perso;
 let score;
-let timerRunning = false;
+let scoreManager;
 
 const MAX_CHARGE_DURATION = 1000;
+const INITIAL_TIMER_SECONDS = 60; // Initial timer value
 
 let timerDisplay;
 let timerInterval;
-let timerSeconds = 60;
+let timerSeconds = INITIAL_TIMER_SECONDS;
+let timerRunning = false;
+let playerName = ""; // New variable to store the player's name
 
-window.onload = startGame;
+window.onload = () => {
+  showStartAnimation();
+};
 
-function startGame(showInstructions = true) {
+function showStartAnimation() {
+  const overlay = document.getElementById("overlay");
+  overlay.innerHTML = ''; // Clear any existing content
+
+  const title = document.createElement("h1");
+  title.innerText = "SaltoOlympique";
+  title.className = "game-title";
+  overlay.appendChild(title);
+
+  // Confetti animation
+  confetti({
+    particleCount: 200,
+    spread: 70,
+    origin: { y: 0.6 }
+  });
+
+  setTimeout(() => {
+    title.style.position = 'fixed'; // Make the title stay in the same place
+    title.style.top = '20px';
+    title.style.left = '50%';
+    title.style.transform = 'translateX(-50%)';
+    title.style.zIndex = '1002'; // Ensure the title is above other elements
+
+    displayPseudoForm(); // Show the pseudo form after the animation
+  }, 3000); // Show the start menu after 3 seconds
+}
+
+function displayPseudoForm() {
+  const overlay = document.getElementById("overlay");
+  overlay.innerHTML = ''; // Clear any existing content
+
+  const formContainer = document.createElement("div");
+  formContainer.style.textAlign = "center";
+  formContainer.style.color = "white";
+
+  const inputPseudo = document.createElement("input");
+  inputPseudo.type = "text";
+  inputPseudo.placeholder = "Entrez votre pseudo";
+  inputPseudo.style.margin = "10px";
+  inputPseudo.style.padding = "10px";
+  inputPseudo.style.borderRadius = "5px";
+  formContainer.appendChild(inputPseudo);
+
+  const submitButton = document.createElement("button");
+  submitButton.innerText = "Confirmer";
+  submitButton.style.margin = "10px";
+  submitButton.style.padding = "10px 20px";
+  submitButton.style.border = "none";
+  submitButton.style.borderRadius = "5px";
+  submitButton.style.backgroundColor = "#4CAF50";
+  submitButton.style.color = "white";
+  submitButton.style.cursor = "pointer";
+  submitButton.addEventListener("click", () => {
+    if (inputPseudo.value.trim() !== "") {
+      playerName = inputPseudo.value.trim();
+      displayCharacterSelection(startGame);
+    } else {
+      alert("Veuillez entrer un pseudo.");
+    }
+  });
+
+  formContainer.appendChild(inputPseudo);
+  formContainer.appendChild(submitButton);
+  overlay.appendChild(formContainer);
+}
+
+function displayStartMenu() {
+  const overlay = document.getElementById("overlay");
+  overlay.innerHTML = ''; // Clear any existing content
+
+  const menuContainer = document.createElement("div");
+  menuContainer.style.textAlign = "center";
+  menuContainer.style.color = "white";
+
+  const startButton = document.createElement("button");
+  startButton.innerText = "Démarrer le jeu";
+  startButton.style.margin = "10px";
+  startButton.style.padding = "10px 20px";
+  startButton.style.border = "none";
+  startButton.style.borderRadius = "5px";
+  startButton.style.backgroundColor = "#4CAF50";
+  startButton.style.color = "white";
+  startButton.style.cursor = "pointer";
+  startButton.addEventListener("click", () => {
+    overlay.innerHTML = ''; // Clear the overlay
+    displayPseudoForm(); // Show the pseudo form before starting the game
+  });
+
+  const instructionsButton = document.createElement("button");
+  instructionsButton.innerText = "Instructions";
+  instructionsButton.style.margin = "10px";
+  instructionsButton.style.padding = "10px 20px";
+  instructionsButton.style.border = "none";
+  instructionsButton.style.borderRadius = "5px";
+  instructionsButton.style.backgroundColor = "#2196F3";
+  instructionsButton.style.color = "white";
+  instructionsButton.style.cursor = "pointer";
+  instructionsButton.addEventListener("click", () => {
+    overlay.innerHTML = ''; // Clear the overlay
+    displayInstructionsHTML();
+  });
+
+  menuContainer.appendChild(startButton);
+  menuContainer.appendChild(instructionsButton);
+  overlay.appendChild(menuContainer);
+}
+
+function startGame(characterFile) {
   canvas = document.getElementById("myCanvas");
   engine = new BABYLON.Engine(canvas, true);
   scene = createScene(engine, canvas);
 
   score = new Score();
+  scoreManager = new ScoreManager();
+  scoreManager.displayLeaderboard(); // Display the leaderboard at the start of the game
 
-  perso = new Personnage(scene, score);
-  perso.createCharacter();
+  perso = new Personnage(scene, score, characterFile);
+  perso.createCharacter((loadedCharacter) => {
+    camera = createCamera(scene, canvas, loadedCharacter);
+    scene.activeCamera = camera;
 
-  camera = createCamera(scene, canvas, perso.cube);
+    // Start the render loop only after the camera is set
+    engine.runRenderLoop(() => {
+      scene.render();
+      if (chargingBar && chargingBar.dataset.charging === "true") {
+        let chargeDuration = Date.now() - chargeStartTime;
+        updateChargingBar(chargeDuration);
+      }
+      perso.update(inputStates);
+    });
+  });
 
   chargingBar = createChargingBar();
-
-  
-
-  if (showInstructions) {
-    displayInstructionsHTML();
-    score.ScoreDisplays();
-  }
-
+  score.ScoreDisplays();
+  displayInstructionsHTML();
 
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
-
-  engine.runRenderLoop(() => {
-    scene.render();
-    if (chargingBar && chargingBar.dataset.charging === "true") {
-      let chargeDuration = Date.now() - chargeStartTime;
-      updateChargingBar(chargeDuration);
-    }
-    perso.update(inputStates);
-  });
 
   window.addEventListener("resize", () => {
     engine.resize();
@@ -65,7 +177,6 @@ function startGame(showInstructions = true) {
 
   modifySettings(inputStates);
 }
-
 
 function handleKeyDown(event) {
   if (event.code === "Space" && !perso.isJumping) {
@@ -85,30 +196,9 @@ function handleKeyDown(event) {
   if (event.code === "ArrowRight") {
     inputStates.right = true;
   }
-  if (event.code === "ArrowUp" && perso.isJumping && !inputStates.flipping) {
+  if (event.code === "KeyF" && perso.isJumping && !inputStates.flipping) {
     inputStates.flipping = true;
     perso.isFlipping = true;
-  }
-  if (
-    inputStates.flipping &&
-    perso.isJumping &&
-    !inputStates.twistingRigth &&
-    inputStates.right
-  ) {
-    inputStates.twistingRigth = true;
-    perso.isTwisting = true;
-
-    console.log("twistppipipipiing");
-  }
-  if (
-    inputStates.flipping &&
-    perso.isJumping &&
-    !inputStates.twistingLeft &&
-    inputStates.left
-  ) {
-    inputStates.twistingLeft = true;
-    perso.isTwisting = true;
-    console.log("ca twits twisting");
   }
 }
 
@@ -116,7 +206,7 @@ function handleKeyUp(event) {
   if (event.code === "Space" && chargingBar.dataset.charging === "true") {
     let chargeDuration = Date.now() - chargeStartTime;
     let jumpHeight = perso.calculateJumpHeight(chargeDuration);
-    perso.cubeJump(jumpHeight);
+    perso.characterJump(jumpHeight, chargingBar);
     chargingBar.style.display = "none";
     chargingBar.dataset.charging = "false";
     perso.isJumping = true;
@@ -125,18 +215,13 @@ function handleKeyUp(event) {
 
   if (event.code === "ArrowLeft") {
     inputStates.left = false;
-    inputStates.twistingLeft = false;
   }
   if (event.code === "ArrowRight") {
     inputStates.right = false;
-    inputStates.twistingRigth = false;
   }
-  if (event.code === "ArrowUp") {
+  if (event.code === "KeyF") {
     inputStates.flipping = false;
     perso.isFlipping = false;
-    inputStates.twistingLeft = false;
-    inputStates.twistingRigth = false;
-    perso.isTwisting = false;
   }
 }
 
@@ -180,11 +265,11 @@ function updateChargingBar(chargeDuration) {
 }
 
 function startTimer() {
-  if (timerInterval) {
-    console.log("Timer already running",timerInterval);
-
-    return; // Arrête la fonction si le timer est déjà en cours
+  if (timerRunning) {
+    return; // Stop if   the timer is already running
   }
+
+  timerRunning = true; // Set the timer as running
 
   timerDisplay = document.createElement("div");
   timerDisplay.className = "timer";
@@ -202,11 +287,11 @@ function startTimer() {
     if (timerSeconds <= 10) {
       timerDisplay.style.fontSize = "40px";
       timerDisplay.style.textShadow =
-        "1px 1px 1px #ff0000, 0.5px 0.5px 1px #cc0000, 1px 0.5px 1px #ff0000, 0.75px 0.75px 1px #cc0000, 1.25px 0.75px 1px #ff0000, 1px 1px 1px #cc0000, 1.5px 1px 1px #ff0000, 1.25px 1.25px 1px #cc0000, 1.75px 1.25px 1px #ff0000, 1.5px 1.5px 1px #cc0000, 2px 1.5px 1px #ff0000, 1.75px 1.75px 1px #cc0000, 2.25px 1.75px 1px #ff0000";
+          "1px 1px 1px #ff0000, 0.5px 0.5px 1px #cc0000, 1px 0.5px 1px #ff0000, 0.75px 0.75px 1px #cc0000, 1.25px 0.75px 1px #ff0000, 1px 1px 1px #cc0000, 1.5px 1px 1px #ff0000, 1.25px 1.25px 1px #cc0000, 1.75px 1.25px 1px #ff0000, 1.5px 1.5px 1px #cc0000, 2px 1.5px 1px #ff0000, 1.75px 1.75px 1px #cc0000, 2.25px 1.75px 1px #ff0000";
     }
     if (timerSeconds === 0) {
       clearInterval(timerInterval);
-      console.log("Timer ended",timerInterval);
+      timerRunning = false; // Reset the timer running flag
       endGame();
     }
   }, 1000);
@@ -219,27 +304,56 @@ function formatTime(seconds) {
 }
 
 function endGame() {
+  const finalScore = score.getHighScore();
+  const bestScore = scoreManager.getBestScore();
+  const isNewBest = finalScore > bestScore;
+
+  if (isNewBest) {
+    // Show congratulatory message and confetti
+    const congratsMessage = document.createElement("div");
+    congratsMessage.innerText = `Félicitations ${playerName}! Vous avez le meilleur score de ${finalScore}!`;
+    congratsMessage.style.position = "absolute";
+    congratsMessage.style.top = "25%";
+    congratsMessage.style.left = "50%";
+    congratsMessage.style.transform = "translate(-50%, -50%)";
+    congratsMessage.style.color = "red";
+    congratsMessage.style.fontSize = "24px";
+    congratsMessage.style.fontWeight = "bold";
+    congratsMessage.style.textAlign = "center";
+    congratsMessage.id = "congratsMessage"; // Set the ID to easily remove it later
+    document.body.appendChild(congratsMessage);
+
+    // Show the character in pose animation
+    if (perso && perso.poseAnim) {
+      perso.character.position = new BABYLON.Vector3(0, 1.51, 0); // Position character
+      perso.character.scaling = new BABYLON.Vector3(20, 20, 20);
+      playAnimation(perso.poseAnim); // Play pose animation
+    }
+
+    confetti({
+      particleCount: 200,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+
+    setTimeout(() => {
+      congratsMessage.remove();
+    }, 5000); // Remove the message after 5 seconds
+  }
+
   // Afficher un message indiquant la fin du jeu et le score final
   let endMessage = document.createElement("div");
-  endMessage.innerText = `Le temps est écoulé ! Votre score final est de ${score.getHighScore()}.`;
+  endMessage.innerText = `Le temps est écoulé ! Votre score final est de ${finalScore}.`;
   endMessage.style.position = "absolute";
-  endMessage.style.top = "25%";
+  endMessage.style.top = "35%";
   endMessage.style.left = "50%";
   endMessage.style.transform = "translate(-50%, -50%)";
   endMessage.style.color = "white";
   endMessage.style.fontSize = "24px";
   endMessage.style.fontWeight = "bold";
   endMessage.style.textAlign = "center";
+  endMessage.id = "endMessage"; // Set the ID to easily remove it later
   document.body.appendChild(endMessage);
-  
-  let inputPseudo = document.createElement("input");
-  inputPseudo.type = "text";
-  inputPseudo.placeholder = "Entrez votre pseudo";
-  inputPseudo.style.position = "absolute";
-  inputPseudo.style.top = "40%";
-  inputPseudo.style.left = "50%";
-  inputPseudo.style.transform = "translate(-50%, -50%)";
-  document.body.appendChild(inputPseudo);
 
   let restartButton = document.createElement("button");
   restartButton.innerText = "Rejouer";
@@ -247,25 +361,38 @@ function endGame() {
   restartButton.style.top = "50%";
   restartButton.style.left = "50%";
   restartButton.style.transform = "translate(-50%, -50%)";
+  restartButton.id = "restartButton"; // Set the ID to easily remove it later
   restartButton.addEventListener("click", () => {
-      let pseudo = inputPseudo.value;
-      if (pseudo) {
-          console.log(`Pseudo: ${pseudo}, Score: ${score.getHighScore()}`);
-          restartGame();
-          restartButton.remove(); // Supprime le bouton reset après avoir réinitialisé le jeu
-          inputPseudo.remove(); 
-          endMessage.remove();
-          timerDisplay.remove();
-
-      } else {
-          alert("Veuillez entrer un pseudo.");
-      }
+    scoreManager.addScore(playerName, finalScore);
+    scoreManager.displayLeaderboard();
+    restartGame();
+    endMessage.remove();
+    restartButton.remove();
   });
   document.body.appendChild(restartButton);
+
+  let quitButton = document.createElement("button");
+  quitButton.innerText = "Quitter";
+  quitButton.style.position = "absolute";
+  quitButton.style.top = "60%";
+  quitButton.style.left = "50%";
+  quitButton.style.transform = "translate(-50%, -50%)";
+  quitButton.id = "quitButton"; // Set the ID to easily remove it later
+  quitButton.addEventListener("click", () => {
+    scoreManager.addScore(playerName, finalScore);
+    scoreManager.displayLeaderboard();
+    clearDynamicElements();
+    endMessage.remove();
+    restartButton.remove();
+    quitButton.remove();
+    showStartAnimation(); // Restart the game
+  });
+  document.body.appendChild(quitButton);
 }
+
 function restartGame() {
   // Clear dynamic game elements
-  const elementsToRemove = document.querySelectorAll("#chargingBar, #timerDisplay, #endMessage, #instructions, #resetButton");
+  const elementsToRemove = document.querySelectorAll("#chargingBar, .timer, #endMessage, #instructions, #leaderboard, #restartButton, #quitButton");
   elementsToRemove.forEach(element => element.remove());
 
   // Reset game variables
@@ -275,24 +402,24 @@ function restartGame() {
   timerRunning = false;
 
   // Reset score and timer
-  timerSeconds = 60;  // Reset timer to 1 minute
-  if (perso && perso.cube) {
-    perso.cube.animations.forEach(animation => {
-      perso.scene.stopAnimation(perso.cube, animation);
-    });
-    perso.cube.animations = [];
+  timerSeconds = INITIAL_TIMER_SECONDS;  // Reset timer to initial value
+  if (perso) {
+    perso.reset();
+    inputStates = {}; // Reset input states
   }
   if (timerInterval) {
     clearInterval(timerInterval);
     timerInterval = null; // Reset the timer interval variable
   }
+  score.removeScoreDisplays(); // Ensure score displays are removed
   // Restart the game without displaying instructions
-  startGame(false);  // Pass false to indicate not to show instructions
+  displayCharacterSelection(startGame);  // Display character selection to start the game
 
-  if (perso) {
-    perso.cubeReset();
-    inputStates = {}; // Reset input states
-  }
-  console.log("Timer restarted",timerInterval);
-
+  console.log("Timer restarted", timerInterval);
 }
+
+function clearDynamicElements() {
+  const elementsToRemove = document.querySelectorAll("#chargingBar, .timer, #endMessage, #instructions, #leaderboard, #scoreStreak, #currentScore");
+  elementsToRemove.forEach(element => element.remove());
+}
+

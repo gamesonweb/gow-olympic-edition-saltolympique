@@ -1,18 +1,23 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>saltolympique</title>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="css/default.css" />
-    <script src="lib/babylon.max.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- <script src="https://cdn.babylonjs.com/gui/babylon.gui.js"></script> -->
-    <!-- <script type="module" src="js/granny.js"></script> -->
-    <script type="module" src="js\score.js"></script>
-    <script type="module" src="js/personnage.js"></script>
-    <script type="module" src="js/mainScene.js"></script>
-    <script type="module" src="js/main.js"></script>
-  </head>
-  <body>
-    <canvas id="myCanvas" width="1600" height="1200"></canvas>
-  </body>
+<head>
+  <title>saltolympique</title>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="css/default.css" />
+  <link rel="stylesheet" href="css/styles.css" /> <!-- Ajout du nouveau fichier CSS -->
+  <script src="https://cdn.babylonjs.com/babylon.max.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script src="https://cdn.babylonjs.com/gui/babylon.gui.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script> <!-- Ajout de la bibliothèque de confettis -->
+  <script type="module" src="js/score.js"></script>
+  <script type="module" src="js/personnage.js"></script>
+  <script type="module" src="js/mainScene.js"></script>
+  <script type="module" src="js/characterSelection.js"></script> <!-- Ajout du nouveau fichier JS -->
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/ScoreManager.js"></script>
+</head>
+<body>
+<div id="overlay"></div> <!-- Overlay for menu and character selection -->
+<canvas id="myCanvas" width="1600" height="1200"></canvas>
+</body>
 </html>
