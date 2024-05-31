@@ -81,9 +81,6 @@ function displayPseudoForm() {
   submitButton.style.padding = "10px 20px";
   submitButton.style.border = "none";
   submitButton.style.borderRadius = "5px";
-  submitButton.style.backgroundColor = "#4CAF50";
-  submitButton.style.color = "white";
-  submitButton.style.cursor = "pointer";
   submitButton.addEventListener("click", () => {
     if (inputPseudo.value.trim() !== "") {
       playerName = inputPseudo.value.trim();

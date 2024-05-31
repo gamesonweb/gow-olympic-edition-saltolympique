@@ -1,7 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  color: white;
+  color: gold;
   background-image: url("../assets/image/Fond.png");
   background-size: cover;
   background-position: center;
@@ -65,14 +65,14 @@ body {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
-  background-color: #4caf50;
+  background-color: #000000;
   color: white;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .characterCard button:hover {
-  background-color: #45a049;
+  background-color: #5f74eb;
 }
 
 h1,

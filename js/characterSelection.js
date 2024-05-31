@@ -10,7 +10,6 @@ export function displayCharacterSelection(callback) {
   const title = document.createElement("h2");
   title.innerText = "Choisissez votre personnage";
   title.style.textAlign = "center";
-  title.style.color = "white";
   title.style.width = "100%";
   title.style.marginBottom = "20px";
   selectionContainer.appendChild(title);
@@ -67,7 +66,7 @@ function createPreview(canvas, modelFile) {
     (meshes) => {
       if (meshes.length > 0) {
         const model = meshes[0];
-        model.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1);
+        model.scaling = new BABYLON.Vector3(1, 1, 1);
         model.position = new BABYLON.Vector3(0, 0, 0);
       }
     }
