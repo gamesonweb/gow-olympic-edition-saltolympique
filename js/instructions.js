@@ -2,8 +2,8 @@ export function displayInstructionsHTML() {
   const instructionsContainer = document.createElement("div");
   instructionsContainer.id = "instructions";
   instructionsContainer.className = "instructions";
-  instructionsContainer.style.position = "fixed";
-  instructionsContainer.style.top = "10%";
+  instructionsContainer.style.overflow = "auto";
+    instructionsContainer.style.top = "10%";
   instructionsContainer.style.left = "50%";
   instructionsContainer.style.transform = "translateX(-50%)";
   instructionsContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
