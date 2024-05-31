@@ -1,6 +1,10 @@
 # Saltolympique
 
+
+## Lien du jeux : https://saltoolympique.onrender.com/
+
 ![Video du jeu](https://youtu.be/5tQtLfbYX58)
+
 
 # Description du Jeu
 
@@ -27,6 +31,7 @@ Une fois dans le jeu, voici les contrôles et mécanismes à maîtriser :
 
 3. **Atterrissage** :
    - Assurez-vous de bien retomber sur vos pieds à la fin de chaque saut. Un atterrissage raté annulera le saut et vous ne gagnerez pas de points pour cette tentative.
+
 
 ### Objectif du Jeu
 
@@ -63,12 +68,15 @@ Voici les principales fonctionnalités du gameplay que nous avons implémentées
 - **Système de Score** : Le score s'accumule progressivement à chaque saut et est synchronisé avec un chronomètre. Les points gagnés sont affichés en temps réel à l'écran.
 - **Animations du Personnage** : Le personnage réagit aux actions du joueur en exécutant des animations correspondantes.
 - **Interface Utilisateur (UI)** : Nous avons mis en place une interface utilisateur qui permet aux joueurs d'entrer leur nom et de choisir leur personnage. Actuellement, seul un personnage est disponible, mais d'autres pourraient être ajoutés à l'avenir.
+- **Scoring et Leaderboard** : Nous avons intégré un système de score qui enregistre les performances des joueurs dans un leaderboard. Les cinq meilleurs scores sont affichés à l'écran.
+- **Rejouabilité** : Le jeu est conçu pour être rejouable, avec un système de score qui encourage les joueurs à améliorer leurs performances à chaque tentative.
+- **Quittez le Jeu** : Les joueurs peuvent quitter apres avoir finis une partis et par exemple s'il le souhaite changer de pseudo.
 
 ### Modélisation 3D
 
 Pour créer l'environnement visuel du jeu, nous avons utilisé Blender pour modéliser l'arène grecque.
 
-![Blender](readme/Screenshot%202024-05-31%20135359.png)
+![Blender](readme/blender.png)
 
 Nous avons utilisé un modele de statue trouvé sur sketchfab en CC0 pour notre personnage.
 
@@ -81,11 +89,11 @@ Tout les fichiers Blender sont diponibles dans le repo.
 ### Gestion des Scores
 
 Nous avons développé un serveur utilisant Node.js pour gérer les scores des joueurs. Les données sont stockées dans une base de données MongoDB, hébergée sur Render.com.
-[https://gow-olympic-edition-saltolympique.onrender.com/scores](https://gow-olympic-edition-saltolympique.onrender.com/scores)
+Voici le lien du serveur : [https://gow-olympic-edition-saltolympique.onrender.com/scores](https://gow-olympic-edition-saltolympique.onrender.com/scores)
 Ce système permet de conserver les cinq meilleurs scores des joueurs, ajoutant ainsi une dimension compétitive au jeu et encourageant les joueurs à améliorer leurs performances.
 
 # Membres du groupe
 
-Patrick Fernandes De Faria
-Léo Robin
-Cécile Barouk
+- Patrick Fernandes De Faria
+- Léo Robin
+- Cécile Barouk
