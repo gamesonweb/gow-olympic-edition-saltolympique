@@ -277,4 +277,9 @@ export class Personnage {
     this.rotationX = 0;
     this.rotationY = 0;
   }
+
+  reset() {
+    this.characterReset();
+  }
+
 }
