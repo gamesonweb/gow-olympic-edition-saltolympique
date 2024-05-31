@@ -1,9 +1,9 @@
 # Saltolympique
 
 
-## Lien du jeux : https://saltoolympique.onrender.com/
+## Lien du jeux : [SaltoOlympique](https://saltoolympique.onrender.com/)
 
-![Video du jeu](https://youtu.be/5tQtLfbYX58)
+## Lien de la video : [Video du jeu](https://youtu.be/5tQtLfbYX58)
 
 
 # Description du Jeu
