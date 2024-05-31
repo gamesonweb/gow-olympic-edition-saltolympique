@@ -6,13 +6,17 @@ export class ScoreManager {
 
     async addScore(name, score) {
         try {
-            const response = await fetch('http://localhost:3000/scores', {
+            const response = await fetch('https://gow-olympic-edition-saltolympique.onrender.com/scores', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ name, score })
             });
+
+            // score updated
+
+
 
             const newScore = await response.json();
             this.scores.push(newScore);
@@ -26,7 +30,7 @@ export class ScoreManager {
 
     async loadScores() {
         try {
-            const response = await fetch('http://localhost:3000/scores');
+            const response = await fetch('https://gow-olympic-edition-saltolympique.onrender.com/scores');
             this.scores = await response.json();
             this.displayLeaderboard();
         } catch (error) {
