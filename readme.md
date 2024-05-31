@@ -1,5 +1,7 @@
 # Saltolympique
 
+![Video du jeu](https://youtu.be/5tQtLfbYX58)
+
 # Description du Jeu
 
 ## Fonctionnement du Jeu
