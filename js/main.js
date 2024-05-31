@@ -187,8 +187,6 @@ function handleKeyDown(event) {
       chargingBar.style.width = "0";
       chargingBar.dataset.charging = "true";
       startTimer();
-
-
     }
   }
 
@@ -389,14 +387,11 @@ function endGame() {
     congratsMessage.id = "congratsMessage"; // Set the ID to easily remove it later
     document.body.appendChild(congratsMessage);
 
-
     confetti({
       particleCount: 200,
       spread: 70,
       origin: { y: 0.6 },
     });
-
-
   }
 
   // Afficher un message indiquant la fin du jeu et le score final
