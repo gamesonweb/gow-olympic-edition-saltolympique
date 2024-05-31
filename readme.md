@@ -80,7 +80,7 @@ Pour créer l'environnement visuel du jeu, nous avons utilisé Blender pour mod�
 
 Nous avons utilisé un modele de statue trouvé sur sketchfab en CC0 pour notre personnage.
 
-![lien de la statue](https://sketchfab.com/3d-models/zeus-or-poseidon-from-the-artemision-d4876aa609304682945145debedfc77e#download)
+[lien de la statue](https://sketchfab.com/3d-models/zeus-or-poseidon-from-the-artemision-d4876aa609304682945145debedfc77e)
 
 Il a fallu le mettre en T-pose pour l'utiliser avec mixamo. Nous avons alors pu ajouter des animations au personnage.
 
