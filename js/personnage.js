@@ -27,7 +27,7 @@ export class Personnage {
     loadolympianModel(this.scene, (olympianMesh, animations) => {
       if (olympianMesh) {
         this.character = olympianMesh;
-        this.character.position = new BABYLON.Vector3(0, 0, 0);
+        this.character.position = new BABYLON.Vector3(0, 2, 0);
         this.character.rotation = new BABYLON.Vector3(0, 115, 0);
         this.character.scaling = new BABYLON.Vector3(700, 700, 700);
         this.jumpAnim = animations.jumpAnim; // Assign jumpAnim from the loaded animations
@@ -121,7 +121,7 @@ export class Personnage {
       return;
     }
 
-    this.character.position = new BABYLON.Vector3(0, 0, 0);
+    this.character.position = new BABYLON.Vector3(0, 2, 0);
     this.character.rotation = new BABYLON.Vector3(0,116, 0);
     this.isFlipping = false; // Reset flipping state
     this.isJumping = false; // Reset jumping state
