@@ -72,6 +72,7 @@ export class Personnage {
     this.scene.beginAnimation(this.character, 0, jumpDuration, false, 1, () => {
       // Animation finished callback
       this.characterLand(); // Check if the character landed
+      this.flipAnim.stop();
       this.isJumping = false; // Reset jumping state
       this.characterReset(); // Reset the character position
       this.score.endofJump(); // End of jump
