@@ -438,7 +438,8 @@ function endGame() {
     endMessage.remove();
     restartButton.remove();
     quitButton.remove();
-    showStartAnimation(); // Restart the game
+    restartGame();
+    displayPseudoForm();
   });
   document.body.appendChild(quitButton);
 }
