@@ -34,7 +34,13 @@ export class Personnage {
         this.landAnim = animations.landAnim; // Assign landAnim from the loaded animations
         loadAnimations(this.scene);
         if (this.poseAnim) {
-          this.poseAnim.start(true, 1.0, this.poseAnim.from, this.poseAnim.to, false);
+          this.poseAnim.start(
+            true,
+            1.0,
+            this.poseAnim.from,
+            this.poseAnim.to,
+            false
+          );
         }
         if (callback) callback(this.character);
       } else {
@@ -48,28 +54,41 @@ export class Personnage {
       console.error("Character mesh not loaded.");
       return;
     }
-    if (this.poseAnim) {
-      this.poseAnim.start(true, 1.0, this.poseAnim.from, this.poseAnim.to, false);
-    }
     let jumpDuration = height * 2; // Augmenter la durée du saut en fonction de la hauteur
 
     let animation = new BABYLON.Animation(
-        "jumpAnimation",
-        "position.y",
-        30,
-        BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+      "jumpAnimation",
+      "position.y",
+      30,
+      BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
     );
 
     let keys = [];
     keys.push({ frame: 0, value: this.character.position.y });
-    keys.push({ frame: jumpDuration *0.5, value: this.character.position.y + height });
+    keys.push({
+      frame: jumpDuration * 0.5,
+      value: this.character.position.y + height,
+    });
     keys.push({ frame: jumpDuration, value: this.character.position.y });
 
     animation.setKeys(keys);
     this.character.animations.push(animation);
     if (this.jumpAnim) {
-      this.jumpAnim.start(true, 1.0, this.jumpAnim.from, this.jumpAnim.to, false);
+      this.jumpAnim.start(
+        true,
+        1.0,
+        this.jumpAnim.from,
+        this.jumpAnim.to,
+        false
+      );
+      this.flipAnim.start(
+        true,
+        1.0,
+        this.flipAnim.from,
+        this.flipAnim.to,
+        true
+      );
     }
     this.scene.beginAnimation(this.character, 0, jumpDuration, false, 1, () => {
       // Animation finished callback
@@ -79,10 +98,21 @@ export class Personnage {
       this.score.endofJump(); // End of jump
     });
     if (this.landAnim) {
-      this.landAnim.start(true, 1.0, this.landAnim.from, this.landAnim.to, false);
+      this.landAnim.start(
+        true,
+        1.0,
+        this.landAnim.from,
+        this.landAnim.to,
+        false
+      );
+      this.idleAnim.start(
+        true,
+        1.0,
+        this.idleAnim.from,
+        this.idleAnim.to,
+        true
+      );
     }
-
-
   }
 
   calculateJumpHeight(chargeAmount) {
@@ -118,13 +148,19 @@ export class Personnage {
     }
 
     this.character.position = new BABYLON.Vector3(0, 0, 0);
-    this.character.rotation = new BABYLON.Vector3(0,116, 0);
+    this.character.rotation = new BABYLON.Vector3(0, 116, 0);
     this.isFlipping = false; // Reset flipping state
     this.isJumping = false; // Reset jumping state
     this.rotationX = 0;
     this.rotationY = 0;
     if (this.idleAnim) {
-      this.idleAnim.start(true, 1.0, this.idleAnim.from, this.idleAnim.to, false);
+      this.idleAnim.start(
+        true,
+        1.0,
+        this.idleAnim.from,
+        this.idleAnim.to,
+        false
+      );
     }
   }
 
@@ -132,12 +168,6 @@ export class Personnage {
     if (!this.character) {
       console.error("Character mesh not loaded.");
       return;
-    }
-
-    if (this.flipAnim) {
-      this.flipAnim.start(true, 1.0, this.flipAnim.from, this.flipAnim.to, false);
-    } else {
-      console.error("Flip animation not found.");
     }
   }
 
@@ -168,13 +198,16 @@ export class Personnage {
         this.fullTurnX();
       }
     }
-    if(inputStates.twistingLeft) {
+    if (inputStates.twistingLeft) {
       console.log("TwistiJOEFEng");
       this.rotationX += 0.1;
       this.rotationY -= 0.1;
       this.character.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
       this.character.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
-      if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI){
+      if (
+        Math.abs(this.rotationX) >= 2 * Math.PI ||
+        Math.abs(this.rotationY) >= 2 * Math.PI
+      ) {
         this.fullTurnXandY();
       }
     }
@@ -184,37 +217,45 @@ export class Personnage {
       this.rotationY += 0.1;
       this.character.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
       this.character.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
-      if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI) {
+      if (
+        Math.abs(this.rotationX) >= 2 * Math.PI ||
+        Math.abs(this.rotationY) >= 2 * Math.PI
+      ) {
         this.fullTurnXandY();
-      }}
-      if(inputStates.frontflipping){
-        this.rotationX -= 0.1;
-        this.character.rotate(BABYLON.Axis.X, -0.1, BABYLON.Space.LOCAL);
-        if (Math.abs(this.rotationX) >= 2 * Math.PI) {
-          this.fullTurnX();
-        }}
-        if(inputStates.fronttwistingRigth){
-          this.rotationX -= 0.1;
-          this.rotationY += 0.1;
-          this.character.rotate(BABYLON.Axis.X, -0.1, BABYLON.Space.LOCAL);
-          this.character.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
-          if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI) {
-            this.fullTurnXandY();
-          }
-        }
-        if(inputStates.fronttwistingLeft){
-          console.log("FONTFing");
-          this.rotationX -= 0.1;
-          this.rotationY -= 0.1;
-          this.character.rotate(BABYLON.Axis.X, -0.1, BABYLON.Space.LOCAL);
-          this.character.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
-          if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI) {
-            this.fullTurnXandY();
-          }
-        }
-
-
-      
+      }
+    }
+    if (inputStates.frontflipping) {
+      this.rotationX -= 0.1;
+      this.character.rotate(BABYLON.Axis.X, -0.1, BABYLON.Space.LOCAL);
+      if (Math.abs(this.rotationX) >= 2 * Math.PI) {
+        this.fullTurnX();
+      }
+    }
+    if (inputStates.fronttwistingRigth) {
+      this.rotationX -= 0.1;
+      this.rotationY += 0.1;
+      this.character.rotate(BABYLON.Axis.X, -0.1, BABYLON.Space.LOCAL);
+      this.character.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
+      if (
+        Math.abs(this.rotationX) >= 2 * Math.PI ||
+        Math.abs(this.rotationY) >= 2 * Math.PI
+      ) {
+        this.fullTurnXandY();
+      }
+    }
+    if (inputStates.fronttwistingLeft) {
+      console.log("FONTFing");
+      this.rotationX -= 0.1;
+      this.rotationY -= 0.1;
+      this.character.rotate(BABYLON.Axis.X, -0.1, BABYLON.Space.LOCAL);
+      this.character.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
+      if (
+        Math.abs(this.rotationX) >= 2 * Math.PI ||
+        Math.abs(this.rotationY) >= 2 * Math.PI
+      ) {
+        this.fullTurnXandY();
+      }
+    }
   }
 
   update(inputStates) {
@@ -226,12 +267,29 @@ export class Personnage {
       } else if (!inputStates.flipping && this.isFlipping) {
         this.isFlipping = false;
       }
-    }else {
+    } else {
       // Play the idle animation if no inputs and not jumping
-      if (!inputStates.left && !inputStates.right && !inputStates.flipping && !inputStates.twistingLeft && !inputStates.twistingRight && !inputStates.frontflipping && !inputStates.fronttwistingRight && !inputStates.fronttwistingLeft) {
+      if (
+        !inputStates.left &&
+        !inputStates.right &&
+        !inputStates.flipping &&
+        !inputStates.twistingLeft &&
+        !inputStates.twistingRight &&
+        !inputStates.frontflipping &&
+        !inputStates.fronttwistingRight &&
+        !inputStates.fronttwistingLeft
+      ) {
         if (this.idleAnim && !this.idleAnim.isPlaying) {
-          this.idleAnim.start(true, 1.0, this.idleAnim.from, this.idleAnim.to, false);
-        }}}
+          this.idleAnim.start(
+            true,
+            1.0,
+            this.idleAnim.from,
+            this.idleAnim.to,
+            false
+          );
+        }
+      }
+    }
   }
 
   fullTurnY() {
@@ -241,7 +299,7 @@ export class Personnage {
     }
 
     console.log("Full turn");
-    // Add 100 to the score
+    // Add 150 to the score
     this.score.increaseScore(150);
     // Update the current score display
     this.score.updateCurrentScore();
