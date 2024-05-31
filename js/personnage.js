@@ -21,6 +21,7 @@ export class Personnage {
       if (olympianMesh) {
         this.character = olympianMesh;
         this.character.position = new BABYLON.Vector3(0, 0, 0);
+        this.character.rotation = new BABYLON.Vector3(0, 0, 0);
         this.character.scaling = new BABYLON.Vector3(700, 700, 700);
         this.flipAnim = animations.flipAnim; // Assign flipAnim from the loaded animations
         loadAnimations(this.scene);
@@ -36,6 +37,7 @@ export class Personnage {
       console.error("Character mesh not loaded.");
       return;
     }
+    let jumpDuration = height * 2; // Augmenter la durée du saut en fonction de la hauteur
 
     let animation = new BABYLON.Animation(
         "jumpAnimation",
@@ -47,17 +49,15 @@ export class Personnage {
 
     let keys = [];
     keys.push({ frame: 0, value: this.character.position.y });
-    keys.push({ frame: 20, value: this.character.position.y + height });
-    keys.push({ frame: 40, value: this.character.position.y });
+    keys.push({ frame: jumpDuration *0.5, value: this.character.position.y + height });
+    keys.push({ frame: jumpDuration, value: this.character.position.y });
 
     animation.setKeys(keys);
     this.character.animations.push(animation);
-    this.scene.beginAnimation(this.character, 0, 40, false, 1, () => {
+    this.scene.beginAnimation(this.character, 0, jumpDuration, false, 1, () => {
       // Animation finished callback
       this.characterLand(); // Check if the character landed
       this.isJumping = false; // Reset jumping state
-      chargingBar.style.display = "none"; // Hide the charging bar
-      chargingBar.dataset.charging = "false"; // Reset data attribute
       this.characterReset(); // Reset the character position
       this.score.endofJump(); // End of jump
     });
@@ -77,9 +77,9 @@ export class Personnage {
     }
 
     // check if the character is standing
-    if (this.rotationX > -0.8 && this.rotationX < 0.8) {
+    if (this.rotationX > -0.7 && this.rotationX < 0.7) {
       console.log("Character landed successfully");
-      this.score.increaseScore(300);
+      this.score.increaseScore(50);
       return true;
     } else {
       // JUMP FAILED
@@ -96,7 +96,7 @@ export class Personnage {
     }
 
     this.character.position = new BABYLON.Vector3(0, 0, 0);
-    this.character.rotation = new BABYLON.Vector3(0, 0, 0);
+    this.character.rotation = new BABYLON.Vector3(0,116, 0);
     this.isFlipping = false; // Reset flipping state
     this.isJumping = false; // Reset jumping state
     this.rotationX = 0;
@@ -123,15 +123,15 @@ export class Personnage {
     }
 
     if (inputStates.left) {
-      this.character.rotate(BABYLON.Axis.Y, -0.05, BABYLON.Space.LOCAL);
-      this.rotationY -= 0.05;
+      this.character.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
+      this.rotationY -= 0.1;
       if (Math.abs(this.rotationY) >= 2 * Math.PI) {
         this.fullTurnY();
       }
     }
     if (inputStates.right) {
-      this.character.rotate(BABYLON.Axis.Y, 0.05, BABYLON.Space.LOCAL);
-      this.rotationY += 0.05;
+      this.character.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
+      this.rotationY += 0.1;
       if (Math.abs(this.rotationY) >= 2 * Math.PI) {
         this.fullTurnY();
       }
@@ -143,6 +143,53 @@ export class Personnage {
         this.fullTurnX();
       }
     }
+    if(inputStates.twistingLeft) {
+      console.log("TwistiJOEFEng");
+      this.rotationX += 0.1;
+      this.rotationY -= 0.1;
+      this.character.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
+      this.character.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
+      if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI){
+        this.fullTurnXandY();
+      }
+    }
+    if (inputStates.twistingRigth) {
+      console.log("TwistSQFNNSFing");
+      this.rotationX += 0.1;
+      this.rotationY += 0.1;
+      this.character.rotate(BABYLON.Axis.X, 0.1, BABYLON.Space.LOCAL);
+      this.character.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
+      if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI) {
+        this.fullTurnXandY();
+      }}
+      if(inputStates.frontflipping){
+        this.rotationX -= 0.1;
+        this.character.rotate(BABYLON.Axis.X, -0.1, BABYLON.Space.LOCAL);
+        if (Math.abs(this.rotationX) >= 2 * Math.PI) {
+          this.fullTurnX();
+        }}
+        if(inputStates.fronttwistingRigth){
+          this.rotationX -= 0.1;
+          this.rotationY += 0.1;
+          this.character.rotate(BABYLON.Axis.X, -0.1, BABYLON.Space.LOCAL);
+          this.character.rotate(BABYLON.Axis.Y, 0.1, BABYLON.Space.LOCAL);
+          if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI) {
+            this.fullTurnXandY();
+          }
+        }
+        if(inputStates.fronttwistingLeft){
+          console.log("FONTFing");
+          this.rotationX -= 0.1;
+          this.rotationY -= 0.1;
+          this.character.rotate(BABYLON.Axis.X, -0.1, BABYLON.Space.LOCAL);
+          this.character.rotate(BABYLON.Axis.Y, -0.1, BABYLON.Space.LOCAL);
+          if (Math.abs(this.rotationX) >= 2 * Math.PI || Math.abs(this.rotationY) >= 2 * Math.PI) {
+            this.fullTurnXandY();
+          }
+        }
+
+
+      
   }
 
   update(inputStates) {
@@ -165,7 +212,7 @@ export class Personnage {
 
     console.log("Full turn");
     // Add 100 to the score
-    this.score.increaseScore(100);
+    this.score.increaseScore(150);
     // Update the current score display
     this.score.updateCurrentScore();
     // Reset the rotation
@@ -185,5 +232,19 @@ export class Personnage {
     this.score.updateCurrentScore();
     // Reset the rotation
     this.rotationX = 0;
+  }
+  fullTurnXandY() {
+    if (!this.character) {
+      console.error("Character mesh not loaded.");
+      return;
+    }
+    console.log("TWISTANCE");
+    // Add 300 to the score
+    this.score.increaseScore(500);
+    // Update the current score display
+    this.score.updateCurrentScore();
+    // Reset the rotation
+    this.rotationX = 0;
+    this.rotationY = 0;
   }
 }
