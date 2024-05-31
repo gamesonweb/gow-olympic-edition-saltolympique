@@ -14,6 +14,8 @@ export class Personnage {
     this.rotationX = 0;
     this.rotationY = 0;
     this.flipAnim = null; // Add flipAnim to store the flip animation
+    this.jumpAnim = null; // Add jumpAnim to store the jump animation
+    this.poseAnim = null; // Add poseAnim to store the pose animation
   }
 
   createCharacter(callback) {
@@ -23,8 +25,13 @@ export class Personnage {
         this.character.position = new BABYLON.Vector3(0, 0, 0);
         this.character.rotation = new BABYLON.Vector3(0, 0, 0);
         this.character.scaling = new BABYLON.Vector3(700, 700, 700);
+        this.jumpAnim = animations.jumpAnim; // Assign jumpAnim from the loaded animations
         this.flipAnim = animations.flipAnim; // Assign flipAnim from the loaded animations
+        this.poseAnim = animations.poseAnim; // Assign poseAnim from the loaded animations
         loadAnimations(this.scene);
+        if (this.poseAnim) {
+          this.poseAnim.start(true, 1.0, this.poseAnim.from, this.poseAnim.to, false);
+        }
         if (callback) callback(this.character);
       } else {
         console.error("Character mesh not found.");
@@ -36,6 +43,9 @@ export class Personnage {
     if (!this.character) {
       console.error("Character mesh not loaded.");
       return;
+    }
+    if (this.poseAnim) {
+      this.poseAnim.start(true, 1.0, this.poseAnim.from, this.poseAnim.to, false);
     }
     let jumpDuration = height * 2; // Augmenter la durée du saut en fonction de la hauteur
 
@@ -61,6 +71,9 @@ export class Personnage {
       this.characterReset(); // Reset the character position
       this.score.endofJump(); // End of jump
     });
+    if (this.jumpAnim) {
+      this.jumpAnim.start(true, 1.0, this.jumpAnim.from, this.jumpAnim.to, false);
+    }
   }
 
   calculateJumpHeight(chargeAmount) {
