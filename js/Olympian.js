@@ -1,6 +1,6 @@
-let olympianSkeleton; // Variable to store skeleton
-let poseAnim, flipAnim, jumpAnim; // Variables to store animation groups
-let currentAnimationIndex = 0; // Initialize currentAnimationIndex
+let olympianSkeleton;
+let poseAnim, flipAnim, jumpAnim, landAnim, idleAnim; // Add landAnim and idleAnim
+let currentAnimationIndex = 0;
 
 let path = "assets/models";
 console.log(path);
@@ -16,20 +16,21 @@ export function loadolympianModel(scene, callback) {
         let olympianMesh = meshes[0];
 
         // Set the skeleton and animations
-        let flipAnim = animationGroups.find((anim) => anim.name === "flip");
-        let poseAnim = animationGroups.find((anim) => anim.name === "Pose");
-        let jumpAnim = animationGroups.find((anim) => anim.name === "jump");
-        let idleAnim = animationGroups.find((anim) => anim.name === "idle");
+        flipAnim = animationGroups.find((anim) => anim.name === "flip");
+        poseAnim = animationGroups.find((anim) => anim.name === "Pose");
+        jumpAnim = animationGroups.find((anim) => anim.name === "jump");
+        landAnim = animationGroups.find((anim) => anim.name === "land"); // Add land animation
+        idleAnim = animationGroups.find((anim) => anim.name === "idle"); // Add idle animation
 
-        console.log("olympian model loaded successfully.");
-        callback(olympianMesh, { flipAnim, poseAnim, jumpAnim, idleAnim }); // Pass flipAnim in the callback
+        console.log("Olympian model loaded successfully.");
+        callback(olympianMesh, { flipAnim, poseAnim, jumpAnim, landAnim, idleAnim });
       } else {
-        console.error("olympian model not loaded. No meshes found.");
+        console.error("Olympian model not loaded. No meshes found.");
       }
     },
     null,
     (scene, message, exception) => {
-      console.error(`Error loading olympian model: ${message}`, exception);
+      console.error(`Error loading Olympian model: ${message}`, exception);
     }
   );
 }
@@ -38,7 +39,9 @@ export function loadAnimations(scene) {
   // No need to load animations here since they are loaded with the model
 }
 
-export function playNextAnimation() {
+export function playNextAnimation(isJumping) {
+  if (isJumping) return;
+
   switch (currentAnimationIndex) {
     case 0:
       if (jumpAnim) {

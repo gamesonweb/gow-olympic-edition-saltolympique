@@ -3,7 +3,7 @@ export function displayInstructionsHTML() {
   instructionsContainer.id = "instructions";
   instructionsContainer.className = "instructions";
   instructionsContainer.style.overflow = "auto";
-    instructionsContainer.style.top = "10%";
+  instructionsContainer.style.top = "10%";
   instructionsContainer.style.left = "50%";
   instructionsContainer.style.transform = "translateX(-50%)";
   instructionsContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
@@ -11,6 +11,7 @@ export function displayInstructionsHTML() {
   instructionsContainer.style.padding = "20px";
   instructionsContainer.style.borderRadius = "10px";
   instructionsContainer.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+  instructionsContainer.style.fontSize = "26px"; // Add this line
   instructionsContainer.innerHTML = `
         <h2>Instructions</h2>
         <p>Charge le saut avec la barre ESPACE</p>
